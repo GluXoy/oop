@@ -2,10 +2,8 @@
 #include <cmath>
 #include <cctype>
 #include "stdafx.h"
-#include "Radix.h"
 
-
-int CharToInt(char letter, bool& wasError)
+int CharToInt(char letter)
 {
     letter = std::toupper(letter);   
     std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -21,9 +19,7 @@ int CharToInt(char letter, bool& wasError)
     }
     else
     {
-        wasError = true;
-        std::cout << "Invalid number format! Unexpected symbol!" << std::endl;
-        return 1;
+        throw std::exception("Invalid number format!");
     }
 
 	return digit;
@@ -31,17 +27,17 @@ int CharToInt(char letter, bool& wasError)
 
 char IntToChar(int num)
 {
-    char letter;
-    if (num >= 10 && num <= 35)
+    if (!(num >= 10 && num <= 35))
     {
-        letter = 'A' + (num - 10);
+        throw std::exception("invalid number format!");
     }
 
+    char letter = 'A' + (num - 10);
     return letter;
 }
 
 
-bool CheckIfMinus(const std::string& str, int& digitsAmount, int& i)
+bool CheckIfNegative(const std::string& str, int& digitsAmount, int& i)
 {
     if (str[0] == '-')
     {
@@ -53,54 +49,50 @@ bool CheckIfMinus(const std::string& str, int& digitsAmount, int& i)
 }
 
 
-int StringToInt(const std::string& str, int radix, bool& wasError) {
+int StringToInt(const std::string& str, int radix) {
     const int MAX_INT = 2147483647;
     int digitsAmount = str.size();
     int i = 0;
-    bool isMinus = CheckIfMinus(str, digitsAmount, i);	
+    bool isNegative = CheckIfNegative(str, digitsAmount, i);	
     int result = 0;
-	int digit;
+	int digit = 0;
 
 	for (i; i < str.size(); i++)
 	{        
-        digit = CharToInt(str[i], wasError);
-        if (wasError)
-        {
-            return -1;
-        }
+        digit = CharToInt(str[i]);
 
         if (digit >= radix)
         {
-            wasError = true;
-            std::cout << "Invalid number format! You should not use digits >= your number notation: " << radix << std::endl;
-            return -1;
+            throw std::exception("Invalid number format! You should not use digits >= your number notation!");
         }
         
         int multiplicationStep = digit * static_cast<int>(std::pow(radix, --digitsAmount));
-        if (MAX_INT - multiplicationStep >= result)
+        if (MAX_INT - multiplicationStep < result)
         {
-            result += multiplicationStep;
+            throw std::exception("Overflow!");
         }
-        else
-        {
-            std::cout << "Overflow!" << std::endl;
-            wasError = true;
-            return -1;
-        }
+        result += multiplicationStep;
         std::cout << "res[" << i+1 << "] = " << result << std::endl;
 	}	
 
-    if (isMinus)
+    if (isNegative)
     {
         result *= -1;
     }
     return result;
 }
 
-std::string IntToString(int num, int radix, bool& wasError)
+std::string IntToString(int num, int radix)
 {
-    int remainder = num;
     std::string result;
+    int remainder = 0;
+    bool isNegative = false;
+    if (num < 0)
+    {
+        num *= -1;
+        isNegative = true;
+    }
+    
     do
     {
         remainder = num % radix;
@@ -113,8 +105,13 @@ std::string IntToString(int num, int radix, bool& wasError)
             result.append(std::to_string(remainder));
         }
         num /= radix;
-    } while (num != 0);
+    }
+    while (num != 0);
 
+    if (isNegative)
+    {
+        result.append("-");
+    }
     std::reverse(result.begin(), result.end());
     return result;
 }
@@ -122,48 +119,47 @@ std::string IntToString(int num, int radix, bool& wasError)
 
 int main(int argc, char* argv[])
 {
-	setlocale(LC_ALL, "rus");
-    bool wasError = false;
+    setlocale(LC_ALL, "rus");
+    try
+    {   
+        if (argc != 4)
+        {
+            throw std::exception("invalid argument count\n"
+                "Usage: replace.exe <inputFile> <outputFile> <searchString> <replacementString>");
+        }
 
-	if (argc != 4)
-	{
-		std::cout << "Invalid argument count\n"
-			<< "Usage: replace.exe <inputFile> <outputFile> <searchString> <replacementString>\n";
-		return 1;
-	}
+        int sourceNotation = std::stoi(argv[1]);
+        int destinationNotation = std::stoi(argv[2]);
+        std::string value = argv[3];
 
-	int sourceNotation = std::stoi(argv[1]);
-	if ((sourceNotation < 2) || (sourceNotation > 35))
+        if ((sourceNotation < 2) || (sourceNotation > 35))
+        {
+            throw std::exception("invalid source number notation!");
+        }
+
+        if ((destinationNotation < 2) || (destinationNotation > 35))
+        {
+            throw std::exception("invalid destination number notation!");
+        }
+
+        if (value.empty())
+        {
+            throw std::exception("the value wasn't initialized!");
+        }
+
+        std::cout << "Source notation: " << sourceNotation << '\n';
+        std::cout << "Destination notation: " << destinationNotation << '\n';
+        std::cout << "Value: " << value << '\n';
+
+        int tempNumber = StringToInt(value, sourceNotation);
+        std::cout << "tempNumber: " << tempNumber << '\n';
+        std::cout << "Result: " << IntToString(tempNumber, destinationNotation) << '\n';
+    }
+    catch (std::exception& ex)
     {
-        std::cout << "Invalid number notation!" << std::endl;
+        std::cout << "Error: " << ex.what() << '\n';
         return 1;
     }
-    std::cout << "Source notation: " << sourceNotation << '\n';
-
-	int destinationNotation = std::stoi(argv[2]);
-    if ((destinationNotation < 2) || (destinationNotation > 35))
-    {
-        std::cout << "Invalid number notation!" << std::endl;
-        return 1;
-    }
-    std::cout << "Destination notation: " << destinationNotation << '\n';
-
-	std::string value = argv[3];
-    if (value.size() == 0)
-    {
-        std::cout << "Enter a value!" << '\n';
-        return 1;
-    }
-    std::cout << "Value: " << value << '\n';
-
-    int tempNumber = StringToInt(value, sourceNotation, wasError);
-    if (wasError)
-    {
-        return 1;
-    }
-    std::cout << "tempNumber: " << tempNumber << std::endl;
-
-    std::cout << "Result: " << IntToString(tempNumber, destinationNotation, wasError) << std::endl;
 
 	return 0;
 }
