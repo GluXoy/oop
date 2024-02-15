@@ -1,1 +1,4 @@
-﻿  Radix.vcxproj -> C:\OOP\01\Radix\x64\Debug\Radix.exe
+﻿  Radix.cpp
+C:\OOP\01\Radix\Radix\Radix.cpp(20,39): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+C:\OOP\01\Radix\Radix\Radix.cpp(64,22): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  Radix.vcxproj -> C:\OOP\01\Radix\x64\Debug\Radix.exe

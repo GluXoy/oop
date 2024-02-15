@@ -2,92 +2,28 @@
 #include <cmath>
 #include <cctype>
 #include "stdafx.h"
+#include "Radix.h"
 
 
-int CharToInt(char letter)
+int CharToInt(char letter, bool& wasError)
 {
-    int digit = 0;
-    letter = std::toupper(letter);
+    letter = std::toupper(letter);   
+    std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int digit;
 
-    switch (letter) {
-    case 'A':
-        digit = 10;
-        break;
-    case 'B':
-        digit = 11;
-        break;
-    case 'C':
-        digit = 12;
-        break;
-    case 'D':
-        digit = 13;
-        break;
-    case 'E':
-        digit = 14;
-        break;
-    case 'F':
-        digit = 15;
-        break;
-    case 'G':
-        digit = 16;
-        break;
-    case 'H':
-        digit = 17;
-        break;
-    case 'I':
-        digit = 18;
-        break;
-    case 'J':
-        digit = 19;
-        break;
-    case 'K':
-        digit = 20;
-        break;
-    case 'L':
-        digit = 21;
-        break;
-    case 'M':
-        digit = 22;
-        break;
-    case 'N':
-        digit = 23;
-        break;
-    case 'O':
-        digit = 24;
-        break;
-    case 'P':
-        digit = 25;
-        break;
-    case 'Q':
-        digit = 26;
-        break;
-    case 'R':
-        digit = 27;
-        break;
-    case 'S':
-        digit = 28;
-        break;
-    case 'T':
-        digit = 29;
-        break;
-    case 'U':
-        digit = 30;
-        break;
-    case 'V':
-        digit = 31;
-        break;
-    case 'W':
-        digit = 32;
-        break;
-    case 'X':
-        digit = 33;
-        break;
-    case 'Y':
-        digit = 34;
-        break;
-    case 'Z':
-        digit = 35;
-        break;
+    if (('0' <= letter) && (letter <= '9'))
+    {
+        digit = letter - '0';
+    }
+    else if (('A' <= letter) && (letter <= 'Z'))
+    {
+        digit = alphabet.find(letter) + 10;
+    }
+    else
+    {
+        wasError = true;
+        std::cout << "Invalid number format! Unexpected symbol!" << std::endl;
+        return 1;
     }
 
 	return digit;
@@ -105,37 +41,63 @@ char IntToChar(int num)
 }
 
 
+bool CheckIfMinus(const std::string& str, int& digitsAmount, int& i)
+{
+    if (str[0] == '-')
+    {
+        digitsAmount -= 1;
+        i = 1;
+        return true;
+    }
+    return false;
+}
+
+
 int StringToInt(const std::string& str, int radix, bool& wasError) {
-	int numberOfDigits = str.size();
-	int result = 0;
+    const int MAX_INT = 2147483647;
+    int digitsAmount = str.size();
+    int i = 0;
+    bool isMinus = CheckIfMinus(str, digitsAmount, i);	
+    int result = 0;
 	int digit;
-	for (int i = 0; i < str.size(); i++)
-	{
-		if (('0' <= str[i]) && (str[i] <= '9'))
-		{
-			digit = str[i] - '0';
-		} 
-		else if (('A' <= str[i]) && (str[i] <= 'Z'))
-		{
-			digit = CharToInt(str[i]);
-		}
-		else if (('a' <= str[i]) && (str[i] <= 'z'))
-		{
-			digit = CharToInt(str[i]);
-		}
-        else
+
+	for (i; i < str.size(); i++)
+	{        
+        digit = CharToInt(str[i], wasError);
+        if (wasError)
+        {
+            return -1;
+        }
+
+        if (digit >= radix)
         {
             wasError = true;
-            std::cout << "Invalid number format!" << std::endl;
-            return 1;
+            std::cout << "Invalid number format! You should not use digits >= your number notation: " << radix << std::endl;
+            return -1;
         }
-		result += digit * static_cast<int>(std::pow(radix, --numberOfDigits));
+        
+        int multiplicationStep = digit * static_cast<int>(std::pow(radix, --digitsAmount));
+        if (MAX_INT - multiplicationStep >= result)
+        {
+            result += multiplicationStep;
+        }
+        else
+        {
+            std::cout << "Overflow!" << std::endl;
+            wasError = true;
+            return -1;
+        }
         std::cout << "res[" << i+1 << "] = " << result << std::endl;
 	}	
+
+    if (isMinus)
+    {
+        result *= -1;
+    }
     return result;
 }
 
-std::string StringToInt(int num, int radix, bool& wasError)
+std::string IntToString(int num, int radix, bool& wasError)
 {
     int remainder = num;
     std::string result;
@@ -151,17 +113,8 @@ std::string StringToInt(int num, int radix, bool& wasError)
             result.append(std::to_string(remainder));
         }
         num /= radix;
-    } while (num >= radix);
+    } while (num != 0);
 
-    remainder = num % radix;
-    if (remainder >= 10)
-    {
-        result += (IntToChar(remainder));
-    }
-    else
-    {
-        result.append(std::to_string(remainder));
-    }
     std::reverse(result.begin(), result.end());
     return result;
 }
@@ -170,6 +123,7 @@ std::string StringToInt(int num, int radix, bool& wasError)
 int main(int argc, char* argv[])
 {
 	setlocale(LC_ALL, "rus");
+    bool wasError = false;
 
 	if (argc != 4)
 	{
@@ -178,32 +132,38 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	int sourceNotation = std::stoi(argv[1]);
+	if ((sourceNotation < 2) || (sourceNotation > 35))
+    {
+        std::cout << "Invalid number notation!" << std::endl;
+        return 1;
+    }
+    std::cout << "Source notation: " << sourceNotation << '\n';
 
-	int sourceNotation = std::stoi(argv[1]);      // сделать проверку на диапазон от 2 до 36
-	std::cout << sourceNotation << '\n';
+	int destinationNotation = std::stoi(argv[2]);
+    if ((destinationNotation < 2) || (destinationNotation > 35))
+    {
+        std::cout << "Invalid number notation!" << std::endl;
+        return 1;
+    }
+    std::cout << "Destination notation: " << destinationNotation << '\n';
 
+	std::string value = argv[3];
+    if (value.size() == 0)
+    {
+        std::cout << "Enter a value!" << '\n';
+        return 1;
+    }
+    std::cout << "Value: " << value << '\n';
 
-	int destinationNotation = std::stoi(argv[2]);   // сделать проверку на диапазон от 2 до 36
-	std::cout << destinationNotation << '\n';
-
-	std::string value = argv[3]; // проверять на пустую строку
-	std::cout << value << '\n';
-
-    bool wasError = false;
-
-    int tenNotationNumber = StringToInt(value, sourceNotation, wasError);
+    int tempNumber = StringToInt(value, sourceNotation, wasError);
     if (wasError)
     {
         return 1;
     }
-    else
-    {
-        std::cout << "tenNotationNumber: " << tenNotationNumber << std::endl;
-    }
+    std::cout << "tempNumber: " << tempNumber << std::endl;
 
-    std::cout << "Result: " << StringToInt(tenNotationNumber, destinationNotation, wasError) << std::endl;
-    
-
+    std::cout << "Result: " << IntToString(tempNumber, destinationNotation, wasError) << std::endl;
 
 	return 0;
 }
