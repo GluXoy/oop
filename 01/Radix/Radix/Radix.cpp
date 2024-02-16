@@ -19,7 +19,7 @@ int CharToInt(char letter)
     }
     else
     {
-        throw std::exception("Invalid number format!");
+        throw std::invalid_argument("Invalid number format!");
     }
 
 	return digit;
@@ -29,7 +29,7 @@ char IntToChar(int num)
 {
     if (!(num >= 10 && num <= 35))
     {
-        throw std::exception("invalid number format!");
+        throw std::invalid_argument("invalid number format!");
     }
 
     char letter = 'A' + (num - 10);
@@ -63,13 +63,13 @@ int StringToInt(const std::string& str, int radix) {
 
         if (digit >= radix)
         {
-            throw std::exception("Invalid number format! You should not use digits >= your number notation!");
+            throw std::invalid_argument("Invalid number format! You should not use digits >= your number notation!");
         }
         
         int multiplicationStep = digit * static_cast<int>(std::pow(radix, --digitsAmount));
         if (MAX_INT - multiplicationStep < result)
         {
-            throw std::exception("Overflow!");
+            throw std::overflow_error("Overflow!");
         }
         result += multiplicationStep;
         std::cout << "res[" << i+1 << "] = " << result << std::endl;
@@ -124,27 +124,26 @@ int main(int argc, char* argv[])
     {   
         if (argc != 4)
         {
-            throw std::exception("invalid argument count\n"
+            throw std::invalid_argument("invalid argument count\n"
                 "Usage: replace.exe <inputFile> <outputFile> <searchString> <replacementString>");
         }
 
         int sourceNotation = std::stoi(argv[1]);
-        int destinationNotation = std::stoi(argv[2]);
-        std::string value = argv[3];
-
         if ((sourceNotation < 2) || (sourceNotation > 35))
         {
-            throw std::exception("invalid source number notation!");
+            throw std::out_of_range("invalid source number notation!");
         }
 
+        int destinationNotation = std::stoi(argv[2]);
         if ((destinationNotation < 2) || (destinationNotation > 35))
         {
-            throw std::exception("invalid destination number notation!");
+            throw std::out_of_range("invalid destination number notation!");
         }
 
+        std::string value = argv[3];
         if (value.empty())
         {
-            throw std::exception("the value wasn't initialized!");
+            throw std::invalid_argument("the value wasn't initialized!");
         }
 
         std::cout << "Source notation: " << sourceNotation << '\n';
