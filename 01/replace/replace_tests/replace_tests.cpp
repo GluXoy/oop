@@ -28,7 +28,7 @@ SCENARIO("Replace strings")
         string search = ("a");
         string replacement = ("aa");
 
-        THEN("Output file will be aa\n")
+        THEN("Output file will be aa\n")// получше имя
         {
             CopyStreamWithReplacement(input, output, search, replacement);
             REQUIRE(output.str() == "aa\n");
