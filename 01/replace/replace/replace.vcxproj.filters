@@ -18,12 +18,18 @@
     <ClCompile Include="replace.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="CopyFileAndReplace.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="CopyFileAndReplace.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
