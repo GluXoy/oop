@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 			<< "Usage: replace.exe <inputFile> <outputFile> <searchString> <replacementString>\n";
 		return 1;
 	}
-
+	// разбить на задачи
 	std::ifstream inputFile;
 	inputFile.open(argv[1]);
 	if (!inputFile.is_open()) 
@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
 	std::string replace = argv[4];
 	std::cout << "Replace string: " << argv[4] << '\n';
 
+	// вынести блок в функцию
 	CopyStreamWithReplacement(inputFile, outputFile, search, replace);
 
 	if (!outputFile.flush())
