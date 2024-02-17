@@ -1,8 +1,12 @@
 #pragma once
+// перенести определения функций из заголовочного файла
 
+// программа должна компилироваться без предупреждений
 int CharToInt(char letter)
 {
     letter = std::toupper(letter);
+    // вынести в константу
+    //  алфавит убрать и высчитывать позицию через ascii
     std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     int digit;
 
@@ -24,6 +28,7 @@ int CharToInt(char letter)
 
 char IntToChar(int num)
 {
+    // константы для магических чисел
     if (!(num >= 10 && num <= 35))
     {
         throw std::invalid_argument("invalid number format!");
@@ -47,6 +52,7 @@ bool CheckIfNegative(const std::string& str, int& digitsAmount, int& i)
 
 
 int StringToInt(const std::string& str, int radix) {
+    //сделать так чтобы при INT_MIN не происходило переполнения
     const int MAX_INT = 2147483647;
     int digitsAmount = str.size();
     int i = 0;
@@ -63,6 +69,7 @@ int StringToInt(const std::string& str, int radix) {
             throw std::invalid_argument("Invalid number format! You should not use digits >= your number notation!");
         }
 
+        // по - другому (не со степенью а через выражение в скобках)
         int multiplicationStep = digit * static_cast<int>(std::pow(radix, --digitsAmount));
         if (MAX_INT - multiplicationStep < result)
         {
@@ -71,7 +78,7 @@ int StringToInt(const std::string& str, int radix) {
         result += multiplicationStep;
     }
 
-    if (isNegative)
+    if (isNegative) // при минусе вычитать в result а не здесь, так как оверфлоу не симметрично
     {
         result *= -1;
     }
