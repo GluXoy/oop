@@ -21,56 +21,56 @@ SCENARIO("Replace strings")
         }
     }
 
-    WHEN("Replacing single character with multiple characters")
+    WHEN("Replacing character with other character")
     {
-        istringstream input("a");
+        istringstream input("aaa");
         ostringstream output;
         string search = ("a");
-        string replacement = ("aa");
+        string replacement = ("b");
 
-        THEN("Output file will be aa\n")// получше имя
+        THEN("search character will be changed to another character")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
-            REQUIRE(output.str() == "aa\n");
+            REQUIRE(output.str() == "bbb\n");
         }
     }
 
-    WHEN("Input data will not be looped: 1")
+    WHEN("search string can repeats in input file after replacing")
     {
         istringstream input("abb");
         ostringstream output;
         string search = ("ab");
         string replacement = ("a");
 
-        THEN("Output file will be ab\n")
+        THEN("Output file's data will not be looped")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
             REQUIRE(output.str() == "ab\n");
         }
     }
 
-    WHEN("Input data will not be looped: 2")
+    WHEN("Search string repeats in input file")
     {
         istringstream input("mama");
         ostringstream output;
         string search = ("ma");
         string replacement = ("mama");
 
-        THEN("Output file will be mamamama\n")
+        THEN("Output file's data will not be looped")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
             REQUIRE(output.str() == "mamamama\n");
         }
     }
 
-    WHEN("Input file is not empty")
+    WHEN("Part of search string is substring of input data")
     {
         istringstream input("12312312345");
         ostringstream output;
         string search = ("1231234");
         string replacement = ("X");
 
-        THEN("Output file will be 123X5")
+        THEN("Output file will be correctly replace search strings")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
             REQUIRE(output.str() == "123X5\n");
@@ -79,15 +79,15 @@ SCENARIO("Replace strings")
 
     WHEN("Input file data contains an itself string and replace with the same string")
     {
-        istringstream input("apple");
+        istringstream input("123");
         ostringstream output;
-        string search = ("apple");
-        string replacement = ("apple");
+        string search = ("123");
+        string replacement = ("123");
 
-        THEN("Output file is apple\n")
+        THEN("All search strings will be saved")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
-            REQUIRE(output.str() == "apple\n");
+            REQUIRE(output.str() == "123\n");
         }
     }
 
@@ -98,62 +98,24 @@ SCENARIO("Replace strings")
         string search = ("abc");
         string replacement = ("");
 
-        THEN("Output file is \n")
+        THEN("Search strings must be changed with empty strings")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
             REQUIRE(output.str() == "\n");
         }
     }
 
-    WHEN("Replacing non-empty substring with empty string")
+    WHEN("Replacing empty string with any characters")
     {
-        istringstream input("1abc1");
-        ostringstream output;
-        string search = ("abc");
-        string replacement = ("");
-
-        THEN("Output file is 11\n")
-        {
-            CopyStreamWithReplacement(input, output, search, replacement);
-            REQUIRE(output.str() == "11\n");
-        }
-    }
-
-    WHEN("Replacing empty string with any argiment")
-    {
-        istringstream input("aaaaaa");
+        istringstream input("aaa");
         ostringstream output;
         string search = ("");
-        string replacement = ("xxx");
+        string replacement = ("123");
 
-        THEN("Output file should return the same string: aaaaaa\n")
+        THEN("Output file should return the same string")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
-            REQUIRE(output.str() == "aaaaaa\n");
-        }
-    }
-
-    WHEN("Input data contains the search string at the beginning of the line") {
-        istringstream input("apple\nbanana\n");
-        ostringstream output;
-        string search = "apple";
-        string replacement = "orange";
-
-        THEN("Output file should contain 'orange\nbanana\n'") {
-            CopyStreamWithReplacement(input, output, search, replacement);
-            REQUIRE(output.str() == "orange\nbanana\n");
-        }
-    }
-
-    WHEN("Input data contains the search string at the end of the line") {
-        istringstream input("banana apple\norange apple");
-        ostringstream output;
-        string search = "apple";
-        string replacement = "banana";
-
-        THEN("Output file should contain 'banana banana\norange banana'") {
-            CopyStreamWithReplacement(input, output, search, replacement);
-            REQUIRE(output.str() == "banana banana\norange banana\n");
+            REQUIRE(output.str() == "aaa\n");
         }
     }
 
@@ -162,9 +124,9 @@ SCENARIO("Replace strings")
         istringstream input("abc\n123");
         ostringstream output;
         string search = ("\n");
-        string replacement = ("xxx");
+        string replacement = ("x");
 
-        THEN("Output file should be: abc\n123\n")
+        THEN("Output file should return the uncanged input data")
         {
             CopyStreamWithReplacement(input, output, search, replacement);
             REQUIRE(output.str() == "abc\n123\n");

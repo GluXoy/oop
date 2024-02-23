@@ -10,38 +10,14 @@ int main(int argc, char* argv[])
 			<< "Usage: replace.exe <inputFile> <outputFile> <searchString> <replacementString>\n";
 		return 1;
 	}
-	// разбить на задачи
-	std::ifstream inputFile;
-	inputFile.open(argv[1]);
-	if (!inputFile.is_open()) 
-	{	
-		std::cout << "Failed to open" << argv[1] << "for reading" << std::endl;
-		return 1;
-	}	
-	std::cout << "Input file: " << argv[1] << '\n';
 
-
-	std::ofstream outputFile;
-	outputFile.open(argv[2]);
-	if (!outputFile.is_open())
+	try
 	{
-		std::cout << "Failed to open" << argv[2] << "for writing" << std::endl;
-		return 1;
+		CopyFileWithReplacement(argv);
 	}
-	std::cout << "Output file: " << argv[2] << '\n';
-
-	std::string search = argv[3];
-	std::cout << "Search string: " << argv[3] << '\n';
-
-	std::string replace = argv[4];
-	std::cout << "Replace string: " << argv[4] << '\n';
-
-	// вынести блок в функцию
-	CopyStreamWithReplacement(inputFile, outputFile, search, replace);
-
-	if (!outputFile.flush())
+	catch (const std::exception& ex)
 	{
-		std::cout << "Failed to write data to output file\n";
+		std::cout << ex.what() << '\n';
 		return 1;
 	}
 
