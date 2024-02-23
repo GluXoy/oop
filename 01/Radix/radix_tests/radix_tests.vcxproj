@@ -139,6 +139,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Radix\Radix.cpp" />
     <ClCompile Include="radix_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
