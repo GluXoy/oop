@@ -3,6 +3,7 @@
 #include <iomanip>
 #include "multmatrix.h"
 
+/*ля матриц std::array*/
 
 void MultiplyMatrices(double mx1[MATRIX_SIZE][MATRIX_SIZE],
     double mx2[MATRIX_SIZE][MATRIX_SIZE],
@@ -62,6 +63,7 @@ void ReadMatrixFromFile(const std::string& filename, double matrix[MATRIX_SIZE][
         }
     }
 
+    //необязательно вызывать
     file.close();
 }
 
