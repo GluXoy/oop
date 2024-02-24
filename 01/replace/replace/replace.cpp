@@ -13,6 +13,7 @@ int main(int argc, char* argv[])
 
 	try
 	{
+		//функция доолжна не принимать argv
 		CopyFileWithReplacement(argv);
 	}
 	catch (const std::exception& ex)
