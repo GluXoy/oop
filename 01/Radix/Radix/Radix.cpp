@@ -73,7 +73,7 @@ bool CheckIfNegative(const std::string& str, size_t& i)
 
 
 int StringToInt(const std::string& str, int radix) {
-    const int MAX_INT = 2147483647;
+    const int MAX_INT = 2147483647;//использовать встроенные константы
     const int MIN_INT = -2147483648;
     size_t digitsAmount = str.size();
     size_t i = 0;
@@ -104,7 +104,7 @@ int StringToInt(const std::string& str, int radix) {
             {
                 throw std::overflow_error("Overflow!");
             }
-            result = -result * -radix - digit;
+            result = result * radix - digit;
         }
     }
     return result;
@@ -113,7 +113,7 @@ int StringToInt(const std::string& str, int radix) {
 std::string IntToString(int num, int radix, const int RADIX_MAX)
 {
     std::string result;
-    int remainder = 0;
+    int remainder = 0;//объ€вл€ть в цикле
     bool isNegative = false;
     if (num < 0)
     {
@@ -129,6 +129,7 @@ std::string IntToString(int num, int radix, const int RADIX_MAX)
         }
         else
         {
+            // не надо использовать эту функцию(to_string)
             result.append(std::to_string(remainder));
         }
         num /= radix;
@@ -142,6 +143,8 @@ std::string IntToString(int num, int radix, const int RADIX_MAX)
     return result;
 }
 
+// по значению, а не ссылкой
+// не передавать константы
 std::string ConvertNotation(int& sourceNotation, int& destinationNotation, std::string& value,
     const int RADIX_MAX)
 {

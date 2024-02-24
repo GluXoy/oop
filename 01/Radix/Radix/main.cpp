@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
         int sourceNotation;
         int destinationNotation;
         std::string value;
+        //возввращение в виде объекта
         ParseArguments(argv, sourceNotation, destinationNotation, value, RADIX_MIN, RADIX_MAX);
         
         std::cout << "Result: "
