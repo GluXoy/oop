@@ -2,6 +2,8 @@
 #include "../../../catch2/catch.hpp"
 #include "../multmatrix/multmatrix.h"
 
+//тестовые данные должны быть такими, чтобы результат можно было проверить самому 
+
 SCENARIO("Multiplication of matrices with int elems")
 {
     double mx1[MATRIX_SIZE][MATRIX_SIZE] = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
