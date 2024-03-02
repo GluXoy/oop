@@ -5,3 +5,7 @@
 *.ipch
 *.ipch
 01/replace/.vs/replace/v17/ipch/AutoPCH/66b83073001309b3/REPLACE.ipch
+*.ipch
+01/replace/.vs/replace/v17/ipch/AutoPCH/69b53d62398cd64f/COPYFILEANDREPLACE.ipch
+01/replace/.vs/replace/v17/ipch/AutoPCH/b47eb2fb2e42b0b/REPLACE_TESTS.ipch
+01/replace/.vs/replace/v17/ipch/AutoPCH/66b83073001309b3/REPLACE.ipch
