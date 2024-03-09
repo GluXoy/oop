@@ -39,6 +39,7 @@ void AddOrIgnoreNewWord(const std::string& sourceWord, std::multimap<std::string
 	std::getline(std::cin, translation);
 	if (!translation.empty())
 	{
+		//emplace
 		dictionary.insert(std::make_pair(sourceWord, translation));
 		std::cout << "The word \"" << sourceWord << "\" was kept as \"" << translation << "\" in the dictionary.\n";
 	}
@@ -97,6 +98,7 @@ void PrintTranslatedWords(std::multimap<std::string, std::string>& dictionary)
 		{
 			std::string translations;
 			std::string divider = ", ";
+			// for (auto & [word, translation] : dictionary)
 			for (auto itr = dictionary.begin(); itr != dictionary.end(); itr++)
 			{
 				if (itr->first == sourceWord)
@@ -113,6 +115,7 @@ void PrintTranslatedWords(std::multimap<std::string, std::string>& dictionary)
 	}
 }
 
+//const ссылка
 void WordsTranslater(std::string fileName)
 {
 	std::fstream file;
@@ -122,6 +125,7 @@ void WordsTranslater(std::string fileName)
 		throw std::runtime_error("Failed to open " + fileName + " for reading!");
 	}
 
+	// тип dictionary
 	std::multimap<std::string, std::string> dictionary = FillDictionary(file);
 
 	size_t startDictionarySize = dictionary.size();
@@ -133,6 +137,7 @@ void WordsTranslater(std::string fileName)
 		return;
 	}
 
+	// в отдельную функцию 
 	file.open(fileName, std::ios::out | std::ios::trunc);
 	if (!file)
 	{
