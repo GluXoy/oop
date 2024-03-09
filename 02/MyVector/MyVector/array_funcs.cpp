@@ -29,6 +29,7 @@ void UpdateArray(std::vector<double>& arr)
     std::partial_sort_copy(arr.begin(), arr.end(), destination.begin(), destination.end());
     double minSum = std::accumulate(destination.begin(), destination.end(), 0.0);
 
+    //אכדמנטעל transform
     for (auto& num : arr)
     {
         num += minSum;
