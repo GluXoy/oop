@@ -2,23 +2,26 @@
 #include <iostream>
 #include <map>
 
-void decodeHtmlEntity(std::string& str, const std::string& encodeEl, const std::string& decodeEl)
+using namespace std;
+
+std::string HtmlDecode(std::string const& html, const map<string, string>& replacements)
 {
+	string str = html;
+	const char ENCODE_EL = '&';
+
 	size_t pos = 0;
-	while ((pos = str.find(encodeEl, pos)) != std::string::npos)
+	while ((pos = str.find(ENCODE_EL, pos)) != string::npos)
 	{
-		str.replace(pos, encodeEl.size(), decodeEl);
-		pos += decodeEl.size();
-	}
-}
-
-std::string HtmlDecode(std::string const& html, std::map<std::string, std::string> replacements)
-{
-	std::string decodedHtmlStr = html;
-
-	for (const auto& replacement : replacements) {
-		decodeHtmlEntity(decodedHtmlStr, replacement.first, replacement.second);
+		for (const auto& el : replacements)
+		{
+			if (str.find(el.first, pos) == pos)
+			{
+				str.replace(pos, el.first.size(), el.second);
+				pos += el.second.size();
+				break;
+			}
+		}
 	}
 
-	return decodedHtmlStr;
+	return str;
 }

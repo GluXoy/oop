@@ -2,41 +2,11 @@
 #include <algorithm>
 #include <numeric>
 #include <iostream>
-
-void ReadNumbersFromStream(std::istream& stream, std::vector<float>& arr)
-{
-    float num;
-    while (stream >> num)
-    {
-        arr.push_back(num);
-    }
-}
-
-void PrintArray(const std::vector<float>& arr)
-{
-    for (const auto& num : arr)
-    {
-        std::cout << num << " ";
-    }
-    std::cout << '\n';
-}
-
-void UpdateArray(std::vector<float>& arr)
-{
-    std::vector<float> destination(3);
-
-    std::partial_sort_copy(arr.begin(), arr.end(), destination.begin(), destination.end());
-    float minSum = std::accumulate(destination.begin(), destination.end(), 0.0f);
-
-    for (auto& num : arr)
-    {
-        num += minSum;
-    }
-}
+#include "array_funcs.h"
 
 int main()
 {
-    std::vector<float> arr;
+    std::vector<double> arr;
     try
     {
         ReadNumbersFromStream(std::cin, arr);
@@ -44,8 +14,9 @@ int main()
         std::sort(arr.begin(), arr.end());
         PrintArray(arr);
     }
-    catch (const std::exception&)
+    catch (const std::exception& ex)
     {
+        std::cout << ex.what() << '\n';
         return 1;
     }
     

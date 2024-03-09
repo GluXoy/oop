@@ -127,7 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="array_funcs.cpp" />
     <ClCompile Include="MyVector.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="array_funcs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

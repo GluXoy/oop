@@ -1,0 +1,12 @@
+The Red Square:Красная Площадь
+apple:яблоко
+axe:топор
+badminton:бадминтон
+box:коробка
+car:автомобиль
+cat:кот
+cat:кошка
+dog:собака
+plane:самолет
+sea:море
+table:стол

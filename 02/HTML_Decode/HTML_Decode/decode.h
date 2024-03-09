@@ -12,5 +12,4 @@ std::map<std::string, std::string> replacements =
 	{"&amp;", "&"}
 };
 
-void decodeHtmlEntity(std::string& str, const std::string& encodeEl, const std::string& decodeEl);
-std::string HtmlDecode(std::string const& html, std::map<std::string, std::string> replacements);
+std::string HtmlDecode(std::string const& html, const std::map<std::string, std::string>& replacements);
