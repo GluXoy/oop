@@ -4,7 +4,7 @@
 
 TEST_CASE("GeneratePrimeNumbersSet test")
 {
-    SECTION("Test with upper bound = lower bound")
+    SECTION("Test with lower bound")
     {
         std::set<int> expected = {};
         CHECK(GeneratePrimeNumbersSet(1) == expected);
