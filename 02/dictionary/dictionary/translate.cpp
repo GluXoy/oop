@@ -3,22 +3,30 @@
 #include <sstream>
 #include <map>
 #include <string>
+#include "translate.h"
 
-std::multimap<std::string, std::string> FillDictionary(std::fstream& file)
+
+Dictionary FillDictionary(std::fstream& file)
 {
-	std::multimap<std::string, std::string> dictionary;
+	Dictionary dictionary;
 	std::string line;
+	std::string word;
 	while (std::getline(file, line))
 	{
-		std::stringstream iss(line);
-		std::string key, value;
-		if (std::getline(iss, key, ':') && std::getline(iss, value))
+		if (line.empty())
 		{
-			dictionary.insert(std::make_pair(key, value));
+			word.clear();
 		}
 		else
 		{
-			throw std::runtime_error("Invalid format in line: " + line);
+			if (word.empty())
+			{
+				word = line;
+			}
+			else
+			{
+				dictionary.emplace(word, line);
+			}
 		}
 	}
 
@@ -31,7 +39,7 @@ std::multimap<std::string, std::string> FillDictionary(std::fstream& file)
 	return dictionary;
 }
 
-void AddOrIgnoreNewWord(const std::string& sourceWord, std::multimap<std::string, std::string>& dictionary)
+void AddOrIgnoreNewWord(const std::string& sourceWord, Dictionary& dictionary)
 {
 	std::cout << "The word \"" << sourceWord <<
 		"\" wasn't find. If you want add it to the dictionary, enter the translation, another case enter an empty string.\n";
@@ -39,8 +47,7 @@ void AddOrIgnoreNewWord(const std::string& sourceWord, std::multimap<std::string
 	std::getline(std::cin, translation);
 	if (!translation.empty())
 	{
-		//emplace
-		dictionary.insert(std::make_pair(sourceWord, translation));
+		dictionary.emplace(sourceWord, translation);
 		std::cout << "The word \"" << sourceWord << "\" was kept as \"" << translation << "\" in the dictionary.\n";
 	}
 	else
@@ -67,16 +74,30 @@ bool IsSaveChangings(size_t dictStartLen, size_t dictCurrLen)
 	return true;
 }
 
-void SaveChangingsToFile(std::fstream& file, const std::multimap<std::string, std::string>& dictionary)
+void SaveChangingsToFile(std::fstream& file, const Dictionary& dictionary)
 {
-	for (auto itr = dictionary.begin(); itr != dictionary.end(); itr++)
+	for (auto& [word, translation] : dictionary)
 	{
-		file << itr->first << ':' << itr->second << '\n';
+		file << word << '\n' << translation << '\n' << '\n';
 	}
 	std::cout << "Changes were saved!\n";
 }
 
-void PrintTranslatedWords(std::multimap<std::string, std::string>& dictionary)
+void PrintTranslatedWord(const Dictionary& dictionary, const std::string& sourceWord)
+{
+	std::string translations;
+	std::string divider = ", ";
+	for (auto& [word, translation] : dictionary)
+	{
+		if (word == sourceWord)
+		{
+			translations = translations + translation + divider;
+		}
+	}
+	std::cout << translations.substr(0, translations.length() - divider.length()) << '\n';
+}
+
+void FindWords(Dictionary& dictionary)
 {
 	const std::string EXIT_SIGN = "...";
 	while (1)
@@ -96,17 +117,7 @@ void PrintTranslatedWords(std::multimap<std::string, std::string>& dictionary)
 		auto it = dictionary.find(sourceWord);
 		if (it != dictionary.end())
 		{
-			std::string translations;
-			std::string divider = ", ";
-			// for (auto & [word, translation] : dictionary)
-			for (auto itr = dictionary.begin(); itr != dictionary.end(); itr++)
-			{
-				if (itr->first == sourceWord)
-				{
-					translations = translations + itr->second + divider;
-				}
-			}
-			std::cout << translations.substr(0, translations.length() - divider.length()) << '\n';
+			PrintTranslatedWord(dictionary, sourceWord);
 		}
 		else
 		{
@@ -115,33 +126,40 @@ void PrintTranslatedWords(std::multimap<std::string, std::string>& dictionary)
 	}
 }
 
-//const ссылка
-void WordsTranslater(std::string fileName)
+void OpenFileForReading(std::fstream& file, const std::string& fileName)
 {
-	std::fstream file;
 	file.open(fileName, std::ios::in);
 	if (!file)
 	{
 		throw std::runtime_error("Failed to open " + fileName + " for reading!");
 	}
+}
 
-	// тип dictionary
-	std::multimap<std::string, std::string> dictionary = FillDictionary(file);
+void OpenFileForWriting(std::fstream& file, const std::string& fileName)
+{
+	file.open(fileName, std::ios::out | std::ios::trunc);
+	if (!file)
+	{
+		throw std::runtime_error("Failed to open " + fileName + " for writing!");
+	}
+}
 
+void WordsTranslater(const std::string& fileName)
+{
+	std::fstream file;
+	OpenFileForReading(file, fileName);
+
+	Dictionary dictionary = FillDictionary(file);
+	
 	size_t startDictionarySize = dictionary.size();
 
-	PrintTranslatedWords(dictionary);
+	FindWords(dictionary);
 
 	if (!IsSaveChangings(startDictionarySize, dictionary.size()))
 	{
 		return;
 	}
 
-	// в отдельную функцию 
-	file.open(fileName, std::ios::out | std::ios::trunc);
-	if (!file)
-	{
-		throw std::runtime_error("Failed to open " + fileName + " for writing!");
-	}
+	OpenFileForWriting(file, fileName);
 	SaveChangingsToFile(file, dictionary);
 }

@@ -32,5 +32,6 @@ TEST_CASE("HtmlDecode test")
         CHECK(HtmlDecode("123", replacements) == "123");
         CHECK(HtmlDecode("\n", replacements) == "\n");
         CHECK(HtmlDecode("", replacements) == "");
+        CHECK(HtmlDecode("&&", replacements) == "&&");
     }
 }

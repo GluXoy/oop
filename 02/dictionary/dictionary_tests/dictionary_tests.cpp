@@ -6,35 +6,48 @@
 #include <fstream>
 #include <Windows.h> 
 
-TEST_CASE("FillDictionary Test")
+
+TEST_CASE("PrintTranslatedWord prints correct translation")
 {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
-    std::fstream file("test_file.txt", std::ios::out);
-    file << "apple:яблоко\n";
-    file << "banana:банан\n";
-    file << "cat:кот\n";
-    file << "cat:кошка\n";
-    file.close();
 
-    std::fstream testFile("test_file.txt", std::ios::in);
-    std::multimap<std::string, std::string> dictionary = FillDictionary(testFile);
+    Dictionary testDictionary;
+    testDictionary.emplace("hello", "привет");
+    testDictionary.emplace("The Red Square", "Красная площадь");
+    testDictionary.emplace("cat", "кот");
+    testDictionary.emplace("cat", "кошка");
 
-    SECTION("Check if dictionary is filled correctly")
+    SECTION("Existing word")
     {
-        CHECK(dictionary.size() == 4);
-        CHECK(dictionary.find("apple")->second == "яблоко");
-        CHECK(dictionary.find("banana")->second == "банан");
-        auto range = dictionary.equal_range("cat");
-        bool found = false;
-        for (auto it = range.first; it != range.second; ++it)
-        {
-            if (it->second == "кот")
-            {
-                found = true;
-                break;
-            }
-        }
-        CHECK(found == true);
+        std::stringstream output;
+        std::streambuf* oldCout = std::cout.rdbuf();
+        std::cout.rdbuf(output.rdbuf());
+
+        PrintTranslatedWord(testDictionary, "hello");
+        std::cout.rdbuf(oldCout);
+        CHECK(output.str() == "привет\n");
+    }
+
+    SECTION("Checking many translations of one word")
+    {
+        std::stringstream output;
+        std::streambuf* oldCout = std::cout.rdbuf();
+        std::cout.rdbuf(output.rdbuf());
+
+        PrintTranslatedWord(testDictionary, "cat");
+        std::cout.rdbuf(oldCout);
+        CHECK(output.str() == "кот, кошка\n"); 
+    }
+
+    SECTION("Checking if spaces in word")
+    {
+        std::stringstream output;
+        std::streambuf* oldCout = std::cout.rdbuf();
+        std::cout.rdbuf(output.rdbuf());
+
+        PrintTranslatedWord(testDictionary, "The Red Square");
+        std::cout.rdbuf(oldCout);
+        CHECK(output.str() == "Красная площадь\n");
     }
 }

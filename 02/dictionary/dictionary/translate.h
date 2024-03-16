@@ -3,7 +3,8 @@
 #include <map>
 #include <fstream>
 
+typedef std::multimap<std::string, std::string> Dictionary;
 
-void WordsTranslater(std::string fileName);
-std::multimap<std::string, std::string> FillDictionary(std::fstream& file);
-void AddOrIgnoreNewWord(const std::string& sourceWord, std::multimap<std::string, std::string>& dictionary);
+void WordsTranslater(const std::string& fileName);
+void PrintTranslatedWord(const Dictionary& dictionary, const std::string& sourceWord);
+Dictionary FillDictionary(std::fstream& file);
