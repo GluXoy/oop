@@ -34,6 +34,7 @@ int GetPort(const std::string& portStr, Protocol protocol)
     {
         return static_cast<int>(protocol);
     }
+    // проверка границы
     else if (stoi(portStr.substr(1)) > PORT_MAX || stoi(portStr.substr(1)) < PORT_MIN)
     {
         throw invalid_argument("Invalid port number!");
@@ -66,6 +67,7 @@ bool ParseURL(string const& url, Protocol& protocol, int& port, string& host, st
     }
     catch (const std::exception& ex)
     {
+        // try-catch в main
         cout << ex.what() << '\n';
         return false;
     }
