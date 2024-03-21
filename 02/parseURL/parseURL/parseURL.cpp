@@ -13,11 +13,18 @@ int main()
 
 	while (getline(cin, url))
 	{
-		if (ParseURL(url, protocol, port, host, document))
+		try
 		{
-			cout << "HOST: " << host << endl;
-			cout << "PORT: " << port << endl;
-			cout << "DOC: " << document << endl;
+			if (ParseURL(url, protocol, port, host, document))
+			{
+				cout << "HOST: " << host << endl;
+				cout << "PORT: " << port << endl;
+				cout << "DOC: " << document << endl;
+			}
+		}
+		catch (const std::exception& ex)
+		{
+			cout << ex.what() << '\n';
 		}
 	}
 

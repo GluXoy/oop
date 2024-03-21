@@ -90,27 +90,41 @@ TEST_CASE("ParseURL - Invalid URL")
 
     SECTION("URL без протокола")
     {
-        CHECK(ParseURL("www.example.com/path/to/resource", protocol, port, host, document) == false);
-        CHECK(ParseURL("example.com/path/to/resource", protocol, port, host, document) == false);
-        CHECK(ParseURL("://www.example.com/path/to/resource", protocol, port, host, document) == false);
+        CHECK_THROWS_AS(ParseURL("www.example.com/path/to/resource", protocol, port, host, document), std::runtime_error);
+        CHECK_THROWS_AS(ParseURL("example.com/path/to/resource", protocol, port, host, document), std::runtime_error);
+        CHECK_THROWS_AS(ParseURL("://www.example.com/path/to/resource", protocol, port, host, document), std::runtime_error);
     }
 
     SECTION("Некорректные значения хоста")
     {
-        CHECK(ParseURL("http://:8080/path/to/resource", protocol, port, host, document) == false);
-        CHECK(ParseURL("http:///path/to/resource", protocol, port, host, document) == false);
+        CHECK_THROWS_AS(ParseURL("http://:8080/path/to/resource", protocol, port, host, document), std::runtime_error);
+        CHECK_THROWS_AS(ParseURL("http:///path/to/resource", protocol, port, host, document), std::runtime_error);
     }
 
     SECTION("URL с неправильным форматом порта")
     {
-        CHECK(ParseURL("http://www.example.com:0/path/to/resource", protocol, port, host, document) == false);
-        CHECK(ParseURL("http://www.example.com:-1/path/to/resource", protocol, port, host, document) == false);
-        CHECK(ParseURL("http://www.example.com:abc/path/to/resource", protocol, port, host, document) == false);
-        CHECK(ParseURL("http://www.example.com:65536/path/to/resource", protocol, port, host, document) == false);
+        CHECK_THROWS_AS(ParseURL("http://www.example.com:0/path/to/resource", protocol, port, host, document), std::invalid_argument);
+        CHECK_THROWS_AS(ParseURL("http://www.example.com:-1/path/to/resource", protocol, port, host, document), std::runtime_error);
+        CHECK_THROWS_AS(ParseURL("http://www.example.com:abc/path/to/resource", protocol, port, host, document), std::runtime_error);
+        CHECK_THROWS_AS(ParseURL("http://www.example.com:65536/path/to/resource", protocol, port, host, document), std::invalid_argument);
     }
 
     SECTION("URL с пустым путем")
     {
-        CHECK(ParseURL("http://www.example.com:", protocol, port, host, document) == false);
+        CHECK_THROWS_AS(ParseURL("http://www.example.com:", protocol, port, host, document), std::runtime_error);
+    }
+}
+
+TEST_CASE("ParseURL - boundary ports URL")
+{
+    Protocol protocol;
+    int port;
+    std::string host;
+    std::string document;
+
+    SECTION("URL with boundary ports return true")
+    {
+        CHECK(ParseURL("http://www.example.com:1/path/to/resource", protocol, port, host, document) == true);
+        CHECK(ParseURL("http://www.example.com:65535/path/to/resource", protocol, port, host, document) == true);
     }
 }

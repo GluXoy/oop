@@ -50,26 +50,18 @@ bool ParseURL(string const& url, Protocol& protocol, int& port, string& host, st
     std::regex urlRegex("([\\w]+)://([^/:]+)(:\\d{1,5})?(/.*)?");
     std::smatch match;
 
-    try
+    if (!regex_match(url, match, urlRegex))
     {
-        if (!regex_match(url, match, urlRegex))
-        {
-            throw runtime_error("URL parsing failed.");
-        }
-        protocol = ParseProtocol(match[1]);
-        host = match[2];
-        port = GetPort(match[3], protocol);
-        document = match[4];
-        if (!document.empty())
-        {
-            document = document.substr(1);
-        }
+        throw runtime_error("URL parsing failed.");
     }
-    catch (const std::exception& ex)
+    protocol = ParseProtocol(match[1]);
+    host = match[2];
+    port = GetPort(match[3], protocol);
+    document = match[4];
+    if (!document.empty())
     {
-        // try-catch â main
-        cout << ex.what() << '\n';
-        return false;
+        document = document.substr(1);
     }
+
     return true;
 }
