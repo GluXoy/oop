@@ -1,10 +1,20 @@
 #include <algorithm>
 #include <iostream>
-#include <map>
+#include <vector>
+#include "decode.h"
 
 using namespace std;
 
-string HtmlDecode(string const& html, const map<string, string>& replacements)
+vector<Pair> replacements =
+{
+	{"&quot;", "\""},
+	{"&apos;", "'"},
+	{"&lt;", "<"},
+	{"&gt;", ">"},
+	{"&amp;", "&"}
+};
+
+string HtmlDecode(string const& html, const vector<Pair>& replacements)
 {
 	string str = html;
 	const char ENCODE_EL = '&';
@@ -12,18 +22,18 @@ string HtmlDecode(string const& html, const map<string, string>& replacements)
 	size_t pos = 0;
 	while ((pos = str.find(ENCODE_EL, pos)) != string::npos)
 	{
-		bool encoded = false;
-		for (const auto& el : replacements)
+		bool isEncoded = false;
+		for (const auto& pair : replacements)
 		{
-			if (str.find(el.first, pos) == pos)
+			if (str.find(pair.encode, pos) == pos)
 			{
-				str.replace(pos, el.first.size(), el.second);
-				pos += el.second.size();
-				encoded = true;
+				str.replace(pos, pair.encode.size(), pair.decode);
+				pos += pair.decode.size();
+				isEncoded = true;
 				break;
 			}
 		}
-		if (!encoded)
+		if (!isEncoded)
 		{
 			++pos;
 		}

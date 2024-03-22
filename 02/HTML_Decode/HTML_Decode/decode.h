@@ -1,15 +1,14 @@
 #pragma once
 #include <iostream>
 #include <string>
-#include <map>
+#include <vector>
 
-std::map<std::string, std::string> replacements =
+struct Pair
 {
-	{"&quot;", "\""},
-	{"&apos;", "'"},
-	{"&lt;", "<"},
-	{"&gt;", ">"},
-	{"&amp;", "&"}
+	std::string encode;
+	std::string decode;
 };
 
-std::string HtmlDecode(std::string const& html, const std::map<std::string, std::string>& replacements);
+extern std::vector<Pair> replacements;
+
+std::string HtmlDecode(std::string const& html, const std::vector<Pair>& replacements);
