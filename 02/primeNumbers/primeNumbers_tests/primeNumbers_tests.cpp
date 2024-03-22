@@ -16,6 +16,12 @@ TEST_CASE("GeneratePrimeNumbersSet test")
         CHECK(GeneratePrimeNumbersSet(2) == expected);
     }
 
+    SECTION("test case where the upper bound is a perfect square")
+    {
+        std::set<int> expected = { 2, 3, 5, 7, 11, 13, 17, 19, 23 };
+        CHECK(GeneratePrimeNumbersSet(25) == expected);
+    }
+
     SECTION("Test with upperBound where many prime numbers")
     {
         std::set<int> expected = { 2, 3, 5, 7, 11 };

@@ -17,13 +17,6 @@ int main()
 	}
 	std::set<int> primeNums = GeneratePrimeNumbersSet(setBound);
 	std::cout << "Prime numbers amount: " << primeNums.size() << '\n';
-	
-	//std::cout << '\n';
-	//for (int num : primeNums)
-	//{
-	//	std::cout << num << " ";
-	//}
-	//std::cout << '\n';
 
 	return 0;
 }

@@ -4,30 +4,25 @@
 
 std::set<int> GeneratePrimeNumbersSet(int upperBound)
 {
-	//каким образом хранятся значения в set
 	std::set<int> primeNums;
-	//поменять название
-	std::vector<bool> primes(upperBound, true);
+	std::vector<bool> isPrimes(upperBound + 1, true);
 
-	//тесты не обнаруживают ошибку в этом условии
 	for (int i = 2; i * i <= upperBound; i++)
 	{
-		//выделить на один элемент в массиве больше
-		if (primes[i - 1] == true)
+		if (isPrimes[i] == true)
 		{
 			for (int j = i * i; j <= upperBound; j += i)
 			{
-				primes[j - 1] = false;
+				isPrimes[j] = false;
 			}
 		}
 	}
 
 	for (int i = 2; i <= upperBound; i++)
 	{
-		if (primes[i - 1])
+		if (isPrimes[i])
 		{
-			// ускорить вставку после прочтения про set
-			primeNums.insert(i);
+			primeNums.insert(primeNums.end(), i);
 		}
 	}
 
