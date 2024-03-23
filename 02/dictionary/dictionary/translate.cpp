@@ -2,10 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <algorithm>
 #include <string>
 #include "translate.h"
 
-
+//от istream
 Dictionary FillDictionary(std::fstream& file)
 {
 	Dictionary dictionary;
@@ -56,6 +57,7 @@ void AddOrIgnoreNewWord(const std::string& sourceWord, Dictionary& dictionary)
 	}
 }
 
+//переработать 
 bool IsSaveChangings(size_t dictStartLen, size_t dictCurrLen)
 {
 	if (dictStartLen == dictCurrLen)
@@ -74,6 +76,7 @@ bool IsSaveChangings(size_t dictStartLen, size_t dictCurrLen)
 	return true;
 }
 
+//ссылку на ostream
 void SaveChangingsToFile(std::fstream& file, const Dictionary& dictionary)
 {
 	for (auto& [word, translation] : dictionary)
@@ -115,6 +118,7 @@ void FindWords(Dictionary& dictionary)
 		}
 
 		auto it = dictionary.find(sourceWord);
+
 		if (it != dictionary.end())
 		{
 			PrintTranslatedWord(dictionary, sourceWord);
