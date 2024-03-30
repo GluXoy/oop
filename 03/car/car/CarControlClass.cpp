@@ -80,7 +80,27 @@ CarControl::CarControl(Car& car)
 
 bool CarControl::Info(Car& car)
 {
-    car.PrintInfo();
+    std::string EngineInfo = car.IsTurnedOn() ? "Engine: turned on" : "Engine: turned off";
+    std::cout << EngineInfo << std::endl;
+
+    std::cout << "Direction: ";
+    if (car.GetDirection() == Direction::backward)
+    {
+        std::cout << "backward" << std::endl;
+    }
+    else if (car.GetDirection() == Direction::forward)
+    {
+        std::cout << "forward" << std::endl;
+    }
+    else
+    {
+        std::cout << "standing still" << std::endl;
+    }
+
+    std::cout << "Gear: " << car.GetGear() << std::endl;
+
+    std::cout << "Speed: " << car.GetSpeed() << std::endl;
+
     return true;
 }
 
@@ -96,14 +116,11 @@ bool CarControl::EngineOff(Car& car)
 
 bool CarControl::SetGear(Car& car)
 {
-    std::string gear;
-    do
-    {
-        std::cout << "Enter the gear: ";
-        std::getline(std::cin, gear);
-    } while (!(std::stoi(gear) || gear == "0"));
+    std::string gearStr;
+    std::cout << "Enter the gear: ";
+    std::getline(std::cin, gearStr);
 
-    return car.SetGear(std::stoi(gear));
+    return car.SetGear(std::stoi(gearStr));
 }
 
 bool CarControl::SetSpeed(Car& car)
@@ -113,19 +130,20 @@ bool CarControl::SetSpeed(Car& car)
         std::cout << "Engine is turned off!" << std::endl;
         return false;
     }
-    std::string speed;
-    do
-    {
-        std::cout << "Enter the speed: ";
-        std::getline(std::cin, speed);
-    } while (!(std::stoi(speed) || speed == "0"));
 
-    if (std::stoi(speed) < 0)
+    std::cout << "Enter the speed: ";
+    std::string speedStr;
+    std::getline(std::cin, speedStr);
+
+    int speed = std::stoi(speedStr);
+
+    if (speed < 0)
     {
         std::cout << "Speed must be positive!" << std::endl;
         return false;
     }
-    return car.SetSpeed(std::stoi(speed));
+
+    return car.SetSpeed(speed);
 }
 
 bool CarControl::HandleCommand()

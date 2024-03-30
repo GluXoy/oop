@@ -28,9 +28,14 @@ private:
     Direction direction = Direction::standing;
     int speed = 0;
     int gear = 0;
+
     std::vector<SpeedRange> speedRanges;
     size_t FindGear(int gear) const;
     void SetDirection();
+    bool SetGearIfSpeedZero(int gear);
+    bool SetGearInNewSpeedRange(int gear);
+    bool IsSpeedLessThenCurrent(int speed);
+    bool IfSpeedInCurrentRange(int speed);
 
 public:
     Car();
@@ -42,5 +47,4 @@ public:
     bool TurnOffEngine();
     bool SetGear(int gear);
     bool SetSpeed(int speed);
-    void PrintInfo() const;
 };

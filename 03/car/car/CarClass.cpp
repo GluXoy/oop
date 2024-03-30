@@ -25,7 +25,7 @@ void Car::SetDirection()
     {
         direction = Direction::backward;
     }
-    else if (speed > 0)
+    else if (speed > 0 && direction != Direction::backward)
     {
         direction = Direction::forward;
     }
@@ -44,14 +44,73 @@ Car::Car()
     };
 }
 
-bool Car::IsTurnedOn() const
+bool Car::SetGearIfSpeedZero(int gear)
 {
-    return engineIsTurn;
+    if (GetSpeed() == 0)
+    {
+        this->gear = gear;
+        return true;
+    }
+    else
+    {
+        std::cout << "To switch to reverse gear, the speed must be zero!" << std::endl;
+        return false;
+    }
+}
+
+bool Car::SetGearInNewSpeedRange(int gear)
+{
+    size_t ind = FindGear(gear);
+
+    if (GetSpeed() >= speedRanges[ind].from && GetSpeed() <= speedRanges[ind].to)
+    {
+        this->gear = gear;
+        return true;
+    }
+    else
+    {
+        std::cout << "The current speed isn't in new gear's speed range!" << std::endl;
+        return false;
+    }
+}
+
+bool Car::IsSpeedLessThenCurrent(int speed)
+{
+    if (speed <= GetSpeed())
+    {
+        this->speed = speed;
+        SetDirection();
+        return true;
+    }
+    std::cout << "It is unacceptable to accelerate in neutral gear!" << std::endl;
+    return false;
+}
+
+bool Car::IfSpeedInCurrentRange(int speed)
+{
+    size_t ind = FindGear(this->gear);
+
+    if (speed >= speedRanges[ind].from && speed <= speedRanges[ind].to)
+    {
+        this->speed = speed;
+        SetDirection();
+        return true;
+    }
+    else
+    {
+        std::cout << "The new speed isn't in current gear's speed range!" << std::endl;
+        return false;
+    }
 }
 
 Direction Car::GetDirection() const
 {
     return direction;
+}
+
+bool Car::IsTurnedOn() const
+{
+    return engineIsTurn;
 }
 
 int Car::GetSpeed() const
@@ -88,6 +147,7 @@ bool Car::TurnOffEngine()
     return true;
 }
 
+
 bool Car::SetGear(int gear)
 {
     if (!IsTurnedOn() && gear != 0)
@@ -110,16 +170,7 @@ bool Car::SetGear(int gear)
 
     if (gear == -1)
     {
-        if (GetSpeed() == 0)
-        {
-            this->gear = gear;
-            return true;
-        }
-        else
-        {
-            std::cout << "To switch to reverse gear, the speed must be zero!" << std::endl;
-            return false;
-        }
+        return SetGearIfSpeedZero(gear);
     }
 
     if (gear > 0 && GetDirection() == Direction::backward)
@@ -128,75 +179,15 @@ bool Car::SetGear(int gear)
         return false;
     }
 
-    size_t ind = FindGear(gear);
-
-    if (GetSpeed() >= speedRanges[ind].from && GetSpeed() <= speedRanges[ind].to)
-    {
-        this->gear = gear;
-        return true;
-    }
-    else
-    {
-        std::cout << "The current speed isn't in new gear's speed range!" << std::endl;
-        return false;
-    }
+    return SetGearInNewSpeedRange(gear);
 }
 
 bool Car::SetSpeed(int speed)
 {
     if (GetGear() == 0)
     {
-        if (speed <= GetSpeed())
-        {
-            this->speed = speed;
-            SetDirection();
-            return true;
-        }
-        std::cout << "It is unacceptable to accelerate in neutral gear!" << std::endl;
-        return false;
+        return IsSpeedLessThenCurrent(speed);
     }
 
-    size_t ind = FindGear(this->gear);
-
-    if (speed >= speedRanges[ind].from && speed <= speedRanges[ind].to)
-    {
-        this->speed = speed;
-        SetDirection();
-        return true;
-    }
-    else
-    {
-        std::cout << "The new speed isn't in current gear's speed range!" << std::endl;
-        return false;
-    }
+    return IfSpeedInCurrentRange(speed);
 }
-
-void Car::PrintInfo() const
-{
-    if (IsTurnedOn())
-    {
-        std::cout << "Engine: turned on" << std::endl;
-    }
-    else
-    {
-        std::cout << "Engine: turned off" << std::endl;
-    }
-
-    std::cout << "Direction: ";
-    if (GetDirection() == Direction::backward)
-    {
-        std::cout << "backward" << std::endl;
-    }
-    else if (GetDirection() == Direction::forward)
-    {
-        std::cout << "forward" << std::endl;
-    }
-    else
-    {
-        std::cout << "standing still" << std::endl;
-    }
-
-    std::cout << "Gear: " << GetGear() << std::endl;
-    std::cout << "Speed: " << GetSpeed() << std::endl;
-}
-
