@@ -58,10 +58,13 @@ bool Car::SetGearIfSpeedZero(int gear)
     }
 }
 
+//поменять название
 bool Car::SetGearInNewSpeedRange(int gear)
 {
     size_t ind = FindGear(gear);
 
+    // не все условия покрыты тестами
+    //выделить функцию для попадания в диапазон
     if (GetSpeed() >= speedRanges[ind].from && GetSpeed() <= speedRanges[ind].to)
     {
         this->gear = gear;
@@ -140,6 +143,7 @@ bool Car::TurnOffEngine()
         }
         else
         {
+            //класс не должен работать с вводом-выводом
             std::cout << "Speed and gear must be on zero!" << std::endl;
             return false;
         }

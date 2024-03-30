@@ -18,13 +18,18 @@ struct SpeedRange
     int to;
 };
 
+
+// файл переименовать
 class Car
 {
+//public выше private
 private:
     const int GEAR_MIN = -1;
     const int GEAR_MAX = 5;
 
+    // у имен полей должен быть префикс
     bool engineIsTurn = false;
+    //
     Direction direction = Direction::standing;
     int speed = 0;
     int gear = 0;
