@@ -7,9 +7,9 @@ class CalculatorPresenter
 {
 public:
 	bool InputHandler();
-	void Print(double id);
+	void Print(std::string idName);
 	void PrintVars();
-	void PrintFns();
+	//void PrintFns();
 	CalculatorPresenter(Calculator& calculator);
 	Calculator& m_calc;
 private:
@@ -20,6 +20,6 @@ private:
 	bool ParseLetStatement(const std::string& statement, Variable& var);
 	bool ParseFnStatement(const std::string& statement, Function& fn);
 	void CheckIfIdWasDeclared(std::string idName);
-	double GetValueFromId(std::string idName);
+	void SetIdValue(Function& fn, std::string idName, int idPos);
 	bool WasIdDeclared(std::string idName);
 };

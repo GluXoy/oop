@@ -6,7 +6,17 @@ void Function::SetFirstIdValue(double* id)
 	m_firstId = id;
 }
 
+void Function::SetFirstIdValue(Function* id)
+{
+	m_firstId = id;
+}
+
 void Function::SetSecondIdValue(double* id)
+{ 
+	m_secondId = id;
+}
+
+void Function::SetSecondIdValue(Function* id)
 {
 	m_secondId = id;
 }
@@ -21,15 +31,15 @@ char Function::GetOperator() const
 	return m_operator;
 }
 
-//double Function::GetFirstIdValue() const
-//{
-//	
-//}
-//
-//double Function::GetSecondIdValue() const
-//{
-//	
-//}
+std::variant<double*, Function*> Function::GetFirstIdValue() const
+{
+	return m_firstId;
+}
+
+std::variant<double*, Function*> Function::GetSecondIdValue() const
+{
+	return m_secondId;
+}
 
 void Function::SetName(std::string name)
 {
@@ -41,22 +51,17 @@ std::string Function::GetName() const
 	return m_name;
 }
 
-double Function::Result() const
-{
-	if (m_firstId != nullptr && m_secondId != nullptr)
-	{
-		return
-			m_operator == '*' ? (*m_firstId) * (*m_secondId) :
-			m_operator == '+' ? (*m_firstId) + (*m_secondId) :
-			m_operator == '-' ? (*m_firstId) - (*m_secondId) :
-			*m_firstId / *m_secondId;
-	}
-
-	return m_firstId == nullptr ? NAN : *m_firstId;
-}
-
-Function::Function()
-{
-	m_firstId = nullptr;
-	m_secondId = nullptr;
-}
+//double Function::Result() const
+//{
+//	if (m_firstId != nullptr && m_secondId != nullptr)
+//	{
+//		return
+//			// видимо придется добавить рекурсивный вывод Result если первый id или второй id - функции
+//			m_operator == '*' ? (*m_firstId) * (*m_secondId) :
+//			m_operator == '+' ? (*m_firstId) + (*m_secondId) :
+//			m_operator == '-' ? (*m_firstId) - (*m_secondId) :
+//			*m_firstId / *m_secondId;
+//	}
+//
+//	return m_firstId == nullptr ? NAN : *m_firstId;
+//}

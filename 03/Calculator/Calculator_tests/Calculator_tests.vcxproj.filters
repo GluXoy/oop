@@ -21,7 +21,10 @@
     <ClCompile Include="..\Calculator\Calculator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\Calculator\CalculatorPresenter.cpp">
+    <ClCompile Include="..\Calculator\Function.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Calculator\Variable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
