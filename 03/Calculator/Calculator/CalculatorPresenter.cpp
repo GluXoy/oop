@@ -105,18 +105,18 @@ void CalculatorPresenter::CheckIfIdWasDeclared(std::string idName)
 
 void CalculatorPresenter::SetIdValue(Function& fn, std::string idName, int idPos)
 {
-    for (auto& f : m_calc.fns)
+    if (m_calc.fns.find(idName) != m_calc.fns.end())
     {
-        if (idName == f.GetName())
-        {
-            idPos == 1 ? fn.SetFirstIdValue(f) : fn.SetSecondIdValue(f);
-            return;
-        }
+        idPos == 1 ? fn.SetFirstIdValue(m_calc.fns[idName]) : fn.SetSecondIdValue(m_calc.fns[idName]);
+        return;
     }
-
-    if (m_calc.vars.find(idName) != m_calc.vars.end())
+    else if (m_calc.vars.find(idName) != m_calc.vars.end())
     {
         idPos == 1 ? fn.SetFirstIdValue(m_calc.vars[idName]) : fn.SetSecondIdValue(m_calc.vars[idName]);
+    }
+    else
+    {
+        throw std::invalid_argument("Identifier wasn't find!");
     }
 }
 
@@ -135,7 +135,6 @@ bool CalculatorPresenter::ParseFnStatement(const std::string& statement)
         CheckIfIdWasDeclared(match[2]);
 
         Function fn;
-        m_calc.fns.push_back(fn);
 
         int firstPosId = 1;
         int secondPosId = 2;
@@ -146,14 +145,15 @@ bool CalculatorPresenter::ParseFnStatement(const std::string& statement)
         {
             //поменять название на BreakIf..
             CheckIfIdWasDeclared(secondId);
-            m_calc.fns[m_calc.fns.size() - 1].SetOperator(operation[0]);
-            SetIdValue(m_calc.fns[m_calc.fns.size() - 1], secondId, secondPosId);
+            fn.SetOperator(operation[0]);
+            SetIdValue(fn, secondId, secondPosId);
         }
-        m_calc.fns[m_calc.fns.size() - 1].SetName(match[1]);
+        fn.SetName(match[1]);
 
-        SetIdValue(m_calc.fns[m_calc.fns.size() - 1], match[2], firstPosId);
+        SetIdValue(fn, match[2], firstPosId);
 
-        m_calc.ids.insert(m_calc.fns[m_calc.fns.size() - 1].GetName());
+        m_calc.fns.emplace(fn.GetName(), fn);
+        m_calc.ids.insert(fn.GetName());
         return true;
     }
     return false;
@@ -184,9 +184,9 @@ bool CalculatorPresenter::InputHandler()
     //}
 
     return
-        ParseFnStatement(commandLine) ? true :
         ParseVarStatement(commandLine, var) ? true :
-        ParseLetStatement(commandLine, var);
+        ParseLetStatement(commandLine, var) ? true :
+        ParseFnStatement(commandLine);
 }
 
 void CalculatorPresenter::PrintVars()

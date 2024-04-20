@@ -4,7 +4,6 @@
 
 void Function::SetFirstIdValue(Variable& id) 
 {
-	m_firstId = new Variable;
 	m_firstId = &id;
 }
 

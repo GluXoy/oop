@@ -1,8 +1,6 @@
 #pragma once
 #include <map>
 #include <set>
-#include <vector>
-#include <functional>
 #include "Function.h"
 #include "Variable.h"
 //убрать лишние include
@@ -13,14 +11,15 @@ class Calculator
 {
 public:
 	using VarMap = std::map<std::string, Variable>;
-	using FnVector = std::vector<Function>;
+	using FnMap = std::map<std::string, Function>;
 	using IdSet = std::set<std::string>;
 
 	VarMap vars;
-	FnVector fns;
+	FnMap fns;
 	IdSet ids;
 
 	double Calculate(std::string idName); // const
+
 
 private:
 	double Operate(double val1, double val2, char op);

@@ -118,19 +118,18 @@ double Calculator::CalculateFn(std::variant<Variable*, Function*> f)
 
 double Calculator::Calculate(std::string idName)
 {
-    for (auto& f : fns)
-    {
-        if (idName == f.GetName())
-        {
-            std::variant<Variable*, Function*> firstId = f.GetFirstIdValue();
-            std::variant<Variable*, Function*> secondId = f.GetSecondIdValue();
-            double val1 = CalculateFn(firstId);
-            double val2 = CalculateFn(secondId);
 
-            return Operate(val1, val2, f.GetOperator());
-            //return CalculateFn(&tempFunction);
-        }
+    if (fns.find(idName) != fns.end())
+    {
+        std::variant<Variable*, Function*> firstId = fns[idName].GetFirstIdValue();
+        std::variant<Variable*, Function*> secondId = fns[idName].GetSecondIdValue();
+        double val1 = CalculateFn(firstId);
+        double val2 = CalculateFn(secondId);
+
+        return Operate(val1, val2, fns[idName].GetOperator());
+        //return CalculateFn(&tempFunction);
     }
+
 
     if (vars.find(idName) != vars.end())
     {
