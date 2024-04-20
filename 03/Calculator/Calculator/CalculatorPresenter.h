@@ -11,14 +11,14 @@ public:
 	void PrintVars();
 	//void PrintFns();
 	CalculatorPresenter(Calculator& calculator);
-	Calculator& m_calc;
+	Calculator m_calc;
 private:
-	Function CreateFunction();
-	Variable CreateVariable();
+	//Function CreateFunction();
+	//Variable CreateVariable();
 	bool IsValidIdentifier(const std::string& identifier);
 	bool ParseVarStatement(const std::string& statement, Variable& var);
 	bool ParseLetStatement(const std::string& statement, Variable& var);
-	bool ParseFnStatement(const std::string& statement, Function& fn);
+	bool ParseFnStatement(const std::string& statement);
 	void CheckIfIdWasDeclared(std::string idName);
 	void SetIdValue(Function& fn, std::string idName, int idPos);
 	bool WasIdDeclared(std::string idName);

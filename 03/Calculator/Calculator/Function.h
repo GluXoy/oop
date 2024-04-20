@@ -7,8 +7,8 @@ class Function
 public:
 	bool isInitialized = false;
 	void SetFirstIdValue(double* id);
-	void SetFirstIdValue(Function* id);
-	void SetSecondIdValue(Function* id);
+	void SetFirstIdValue(Function& id);
+	void SetSecondIdValue(Function& id);
 	void SetSecondIdValue(double* id);
 	void SetOperator(char op);
 	char GetOperator() const;
@@ -20,12 +20,11 @@ public:
 	//{
 	//	return m_name < other.m_name;
 	//}
-	Function(std::string name) : m_name(name) {};
-	Function() {};
+
 
 private:
 	std::string m_name;
-	 std::variant<double*, Function*> m_firstId;
-	 std::variant<double*, Function*> m_secondId;
+	std::variant<double*, Function*> m_firstId;
+	std::variant<double*, Function*> m_secondId;
 	mutable char m_operator = '\0';
 };

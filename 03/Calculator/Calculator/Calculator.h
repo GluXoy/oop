@@ -1,5 +1,6 @@
 #pragma once
 #include <set>
+#include <vector>
 #include <functional>
 #include "Function.h"
 #include "Variable.h"
@@ -27,7 +28,7 @@ public:
 
 
 	using VarSet = std::set<Variable, VariableComparator>;
-	using FnSet = std::set<Function, FunctionComparator>;
+	using FnSet = std::vector<Function>;
 	using IdSet = std::set<std::string>;
 	VarSet vars;
 	FnSet fns;

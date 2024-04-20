@@ -3,22 +3,26 @@
 
 void Function::SetFirstIdValue(double* id) 
 {
+	m_firstId = new double;
 	m_firstId = id;
 }
 
-void Function::SetFirstIdValue(Function* id)
+void Function::SetFirstIdValue(Function& id)
 {
-	m_firstId = id;
+	m_firstId = new Function;
+	m_firstId = &id;
 }
 
 void Function::SetSecondIdValue(double* id)
 { 
+	m_secondId = new double;
 	m_secondId = id;
 }
 
-void Function::SetSecondIdValue(Function* id)
+void Function::SetSecondIdValue(Function& id)
 {
-	m_secondId = id;
+	m_secondId = new Function;
+	m_secondId = &id;
 }
 
 void Function::SetOperator(char op)

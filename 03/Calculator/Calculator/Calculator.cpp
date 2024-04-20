@@ -98,6 +98,10 @@ double Calculator::CalculateFn(std::variant<double*, Function*> f)
     //если double 
     if (std::holds_alternative<double*>(f))
     {
+        if (std::get<double*>(f) == nullptr)
+        {
+            return NAN;
+        }
         return *std::get<double*>(f);
     }
     
@@ -115,21 +119,19 @@ double Calculator::CalculateFn(std::variant<double*, Function*> f)
 
 double Calculator::Calculate(std::string idName)
 {
-	auto it = fns.find(Function(idName));
-	if (it != fns.end())
-	{
-        Function tempFunction = *it;
-        fns.erase(it);
-        fns.insert(tempFunction);
+    for (auto& f : fns)
+    {
+        if (idName == f.GetName())
+        {
+            std::variant<double*, Function*> firstId = f.GetFirstIdValue();
+            std::variant<double*, Function*> secondId = f.GetSecondIdValue();
+            double val1 = CalculateFn(firstId);
+            double val2 = CalculateFn(secondId);
 
-        std::variant<double*, Function*> firstId = tempFunction.GetFirstIdValue();
-        std::variant<double*, Function*> secondId = tempFunction.GetSecondIdValue();
-        double val1 = CalculateFn(firstId);
-        double val2 = CalculateFn(secondId);
-
-        return Operate(val1, val2, tempFunction.GetOperator());
-		//return CalculateFn(&tempFunction);
-	}
+            return Operate(val1, val2, f.GetOperator());
+            //return CalculateFn(&tempFunction);
+        }
+    }
 
     auto it2 = vars.find(Variable(idName));
     {
