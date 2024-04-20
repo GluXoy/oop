@@ -10,19 +10,16 @@ void Function::SetFirstIdValue(Variable& id)
 
 void Function::SetFirstIdValue(Function& id)
 {
-	m_firstId = new Function;
 	m_firstId = &id;
 }
 
 void Function::SetSecondIdValue(Variable& id)
 { 
-	m_secondId = new Variable;
 	m_secondId = &id;
 }
 
 void Function::SetSecondIdValue(Function& id)
 {
-	m_secondId = new Function;
 	m_secondId = &id;
 }
 

@@ -2,6 +2,8 @@
 #include "Calculator.h"
 #include "CalculatorPresenter.h"
 
+
+// нарисовать диаграмуу классов
 int main()
 {
     Calculator calc;

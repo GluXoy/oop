@@ -5,7 +5,9 @@
 #include <functional>
 #include "Function.h"
 #include "Variable.h"
-#include <unordered_set>
+//убрать лишние include
+
+// изменить ввод на int
 
 class Calculator
 {
@@ -18,11 +20,13 @@ public:
 	FnVector fns;
 	IdSet ids;
 
-	double Calculate(std::string idName);
+	double Calculate(std::string idName); // const
 
 private:
 	double Operate(double val1, double val2, char op);
 	double CalculateFn(std::variant<Variable*, Function*> f);
+	
+	//инкапсулировать данные
 	//нужны ли? 
 	//void AddFnToSet(Function fn);
 	//void AddVarToSet(Variable var);
