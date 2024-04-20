@@ -410,5 +410,65 @@ TEST_CASE("Check Calculator Class")
 
 		CHECK(calc.Calculate("C") == 11.0);
 	}
+
+	SECTION("...")
+	{
+		Calculator calc;
+
+		Variable v0;
+		v0.SetName("v0");
+		v0.SetValue(0.0);
+		calc.vars.emplace(v0.GetName(), v0);
+		calc.ids.insert(v0.GetName());
+
+		Variable v1;
+		v1.SetName("v1");
+		v1.SetValue(1.0);
+		calc.vars.emplace(v1.GetName(), v1);
+		calc.ids.insert(v1.GetName());
+
+		Function fb0;
+		fb0.SetName("fb0");
+		fb0.SetFirstIdValue(v0);
+		calc.fns.push_back(fb0);
+		calc.ids.insert(fb0.GetName());
+
+		Function fb1;
+		fb1.SetName("fb1");
+		fb1.SetFirstIdValue(v1);
+		calc.fns.push_back(fb1);
+		calc.ids.insert(fb1.GetName());
+
+		Function fb2;
+		fb2.SetName("fb2");
+		fb2.SetOperator('+');
+		fb2.SetFirstIdValue(fb0);
+		fb2.SetSecondIdValue(fb1);
+		calc.fns.push_back(fb2);
+		calc.ids.insert(fb2.GetName());
+		CHECK(calc.Calculate(fb2.GetName()) == 1.0);
+
+		Function fb3;
+		fb3.SetName("fb3");
+		fb3.SetOperator('+');
+		fb3.SetFirstIdValue(fb1);
+		fb3.SetSecondIdValue(fb2);
+		calc.fns.push_back(fb3);
+		calc.ids.insert(fb3.GetName());
+
+
+		CHECK(calc.Calculate(fb3.GetName()) == 2.0);
+
+		Function fb4;
+		fb4.SetName("fb4");
+		fb4.SetOperator('+');
+		fb4.SetFirstIdValue(fb2);
+		fb4.SetSecondIdValue(fb3);
+		calc.fns.push_back(fb4);
+		calc.ids.insert(fb4.GetName());
+
+
+		CHECK(calc.Calculate(fb4.GetName()) == 3.0);
+	}
 }
 
