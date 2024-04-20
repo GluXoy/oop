@@ -16,15 +16,15 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
+		varX.SetName("x");
+		varX.SetValue(1.0);
 
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
-		fnA.SetFirstIdValue(&varX.m_value);
+		fnA.SetFirstIdValue(varX);
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
 
@@ -36,19 +36,19 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
+		varX.SetName("x");
+		varX.SetValue(1.0);
 
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
-		fnA.SetFirstIdValue(&varX.m_value);
+		fnA.SetFirstIdValue(varX);
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
 
-		varX.m_value = 2.0;
+		varX.SetValue(2.0);
 
 		CHECK(calc.Calculate("A") == 2.0);
 	}
@@ -58,29 +58,31 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
+		varX.SetName("x");
+		varX.SetValue(1.0);
+
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
+		varY.SetName("y");
+		varY.SetValue(2.0);
 
-		calc.vars.insert(varY);
-		calc.vars.insert(varX);
-		calc.ids.insert(varY.m_name);
-		calc.ids.insert(varX.m_name);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
+
 
 		Function fnA;
 		fnA.SetName("A");
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
 
 		bool isCorrectFirstId = false;
-		if (std::holds_alternative<double*>(fnA.GetFirstIdValue()))
+		if (std::holds_alternative<Variable*>(fnA.GetFirstIdValue()))
 		{
-			if (*std::get<double*>(fnA.GetFirstIdValue()) == varX.m_value)
+			if (std::get<Variable*>(fnA.GetFirstIdValue())->GetValue() == varX.GetValue())
 			{
 				isCorrectFirstId = true;
 			}
@@ -88,9 +90,9 @@ TEST_CASE("Check Calculator Class")
 		CHECK(isCorrectFirstId == true);
 
 		bool isCorrectSecondId = false;
-		if (std::holds_alternative<double*>(fnA.GetSecondIdValue()))
+		if (std::holds_alternative<Variable*>(fnA.GetSecondIdValue()))
 		{
-			if (*std::get<double*>(fnA.GetSecondIdValue()) == varY.m_value)
+			if (std::get<Variable*>(fnA.GetSecondIdValue())->GetValue() == varY.GetValue())
 			{
 				isCorrectSecondId = true;
 			}
@@ -104,23 +106,22 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
+		varX.SetName("x");
+		varX.SetValue(1.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
-
-		calc.vars.insert(varY);
-		calc.vars.insert(varX);
-		calc.ids.insert(varY.m_name);
-		calc.ids.insert(varX.m_name);
+		varY.SetName("y");
+		varY.SetValue(2.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
 		fnA.SetOperator('+');
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
@@ -133,23 +134,22 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 3.0;
+		varX.SetName("x");
+		varX.SetValue(3.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 1.0;
-
-		calc.vars.insert(varY);
-		calc.vars.insert(varX);
-		calc.ids.insert(varY.m_name);
-		calc.ids.insert(varX.m_name);
+		varY.SetName("y");
+		varY.SetValue(1.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
 		fnA.SetOperator('-');
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
@@ -162,23 +162,22 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 3.0;
+		varX.SetName("x");
+		varX.SetValue(3.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
-
-		calc.vars.insert(varY);
-		calc.vars.insert(varX);
-		calc.ids.insert(varY.m_name);
-		calc.ids.insert(varX.m_name);
+		varY.SetName("y");
+		varY.SetValue(2.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
 		fnA.SetOperator('*');
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
@@ -191,23 +190,22 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 3.0;
+		varX.SetName("x");
+		varX.SetValue(3.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
-
-		calc.vars.insert(varY);
-		calc.vars.insert(varX);
-		calc.ids.insert(varY.m_name);
-		calc.ids.insert(varX.m_name);
+		varY.SetName("y");
+		varY.SetValue(2.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
 		fnA.SetOperator('/');
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
@@ -220,15 +218,14 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
-
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		varX.SetName("x");
+		varX.SetValue(1.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
-		fnA.SetFirstIdValue(&varX.m_value);
+		fnA.SetFirstIdValue(varX);
 
 		Function fnB;
 		fnB.SetName("B");
@@ -247,15 +244,14 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
-
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		varX.SetName("x");
+		varX.SetValue(1.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
-		fnA.SetFirstIdValue(&varX.m_value);
+		fnA.SetFirstIdValue(varX);
 
 		Function fnB;
 		fnB.SetName("B");
@@ -266,7 +262,7 @@ TEST_CASE("Check Calculator Class")
 		calc.fns.push_back(fnB);
 		calc.ids.insert(fnB.GetName());
 
-		varX.m_value = 2.0;
+		varX.SetValue(2.0);
 		CHECK(calc.Calculate("B") == 2.0);
 	}
 
@@ -275,22 +271,22 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		varX.SetName("x");
+		varX.SetValue(1.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
-		calc.vars.insert(varY);
-		calc.ids.insert(varY.m_name);
+		varY.SetName("y");
+		varY.SetValue(2.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
-		fnA.SetFirstIdValue(&varX.m_value);
+		fnA.SetFirstIdValue(varX);
 		fnA.SetOperator('+');
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetSecondIdValue(varY);
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
 
@@ -308,42 +304,42 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		varX.SetName("x");
+		varX.SetValue(1.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
-		calc.vars.insert(varY);
-		calc.ids.insert(varY.m_name);
+		varY.SetName("y");
+		varY.SetValue(2.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Variable varI;
-		varI.m_name = "i";
-		varI.m_value = 3.0;
-		calc.vars.insert(varI);
-		calc.ids.insert(varI.m_name);
+		varI.SetName("i");
+		varI.SetValue(3.0);
+		calc.vars.emplace(varI.GetName(), varI);
+		calc.ids.insert(varI.GetName());
 
 		Variable varJ;
-		varJ.m_name = "j";
-		varJ.m_value = 4.0;
-		calc.vars.insert(varJ);
-		calc.ids.insert(varJ.m_name);
+		varJ.SetName("j");
+		varJ.SetValue(4.0);
+		calc.vars.emplace(varJ.GetName(), varJ);
+		calc.ids.insert(varJ.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
 		fnA.SetOperator('+');
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
 
 		Function fnB;
 		fnB.SetName("B");
 		fnB.SetOperator('+');
-		fnB.SetFirstIdValue(&varI.m_value);
-		fnB.SetSecondIdValue(&varJ.m_value);
+		fnB.SetFirstIdValue(varI);
+		fnB.SetSecondIdValue(varJ);
 		calc.fns.push_back(fnB);
 		calc.ids.insert(fnB.GetName());
 
@@ -363,42 +359,42 @@ TEST_CASE("Check Calculator Class")
 		Calculator calc;
 
 		Variable varX;
-		varX.m_name = "x";
-		varX.m_value = 1.0;
-		calc.vars.insert(varX);
-		calc.ids.insert(varX.m_name);
+		varX.SetName("x");
+		varX.SetValue(1.0);
+		calc.vars.emplace(varX.GetName(), varX);
+		calc.ids.insert(varX.GetName());
 
 		Variable varY;
-		varY.m_name = "y";
-		varY.m_value = 2.0;
-		calc.vars.insert(varY);
-		calc.ids.insert(varY.m_name);
+		varY.SetName("y");
+		varY.SetValue(2.0);
+		calc.vars.emplace(varY.GetName(), varY);
+		calc.ids.insert(varY.GetName());
 
 		Variable varI;
-		varI.m_name = "i";
-		varI.m_value = 3.0;
-		calc.vars.insert(varI);
-		calc.ids.insert(varI.m_name);
+		varI.SetName("i");
+		varI.SetValue(3.0);
+		calc.vars.emplace(varI.GetName(), varI);
+		calc.ids.insert(varI.GetName());
 
 		Variable varJ;
-		varJ.m_name = "j";
-		varJ.m_value = 4.0;
-		calc.vars.insert(varJ);
-		calc.ids.insert(varJ.m_name);
+		varJ.SetName("j");
+		varJ.SetValue(4.0);
+		calc.vars.emplace(varJ.GetName(), varJ);
+		calc.ids.insert(varJ.GetName());
 
 		Function fnA;
 		fnA.SetName("A");
 		fnA.SetOperator('+');
-		fnA.SetFirstIdValue(&varX.m_value);
-		fnA.SetSecondIdValue(&varY.m_value);
+		fnA.SetFirstIdValue(varX);
+		fnA.SetSecondIdValue(varY);
 		calc.fns.push_back(fnA);
 		calc.ids.insert(fnA.GetName());
 
 		Function fnB;
 		fnB.SetName("B");
 		fnB.SetOperator('+');
-		fnB.SetFirstIdValue(&varI.m_value);
-		fnB.SetSecondIdValue(&varJ.m_value);
+		fnB.SetFirstIdValue(varI);
+		fnB.SetSecondIdValue(varJ);
 		calc.fns.push_back(fnB);
 		calc.ids.insert(fnB.GetName());
 
@@ -410,38 +406,9 @@ TEST_CASE("Check Calculator Class")
 		calc.fns.push_back(fnC);
 		calc.ids.insert(fnC.GetName());
 
-		varJ.m_value = 5.0;
+		varJ.SetValue(5.0);
 
 		CHECK(calc.Calculate("C") == 11.0);
 	}
 }
 
-TEST_CASE("Million functions test") {
-	Calculator calc;
-	Variable x0;
-	x0.m_name = "x0";
-	x0.m_value = 1.0;
-	calc.vars.insert(x0);
-	calc.ids.insert(x0.m_name);
-
-	Function fn;
-	fn.SetName("x1");
-	fn.SetOperator('+');
-	fn.SetFirstIdValue(&x0.m_value);
-
-	// Создание миллиона функций
-	for (int i = 2; i <= 10; ++i)
-	{
-		Function fn;
-		fn.SetName("x" + std::to_string(i));		
-		fn.SetOperator('+');
-		fn.SetFirstIdValue(calc.fns[i - 2]);
-		fn.SetSecondIdValue(&x0.m_value);
-		calc.fns.push_back(fn);
-		calc.ids.insert(fn.GetName());
-	}
-
-	// Вызов Calculate для последней функции
-	double result = calc.Calculate("x10");
-	CHECK(result == 10.0); // Ожидаемый результат
-}

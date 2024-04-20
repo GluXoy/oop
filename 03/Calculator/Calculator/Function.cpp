@@ -1,10 +1,11 @@
 #include "Function.h"
+#include "Variable.h"
 #include <cmath>
 
-void Function::SetFirstIdValue(double* id) 
+void Function::SetFirstIdValue(Variable& id) 
 {
-	m_firstId = new double;
-	m_firstId = id;
+	m_firstId = new Variable;
+	m_firstId = &id;
 }
 
 void Function::SetFirstIdValue(Function& id)
@@ -13,10 +14,10 @@ void Function::SetFirstIdValue(Function& id)
 	m_firstId = &id;
 }
 
-void Function::SetSecondIdValue(double* id)
+void Function::SetSecondIdValue(Variable& id)
 { 
-	m_secondId = new double;
-	m_secondId = id;
+	m_secondId = new Variable;
+	m_secondId = &id;
 }
 
 void Function::SetSecondIdValue(Function& id)
@@ -35,12 +36,12 @@ char Function::GetOperator() const
 	return m_operator;
 }
 
-std::variant<double*, Function*> Function::GetFirstIdValue() const
+std::variant<Variable*, Function*> Function::GetFirstIdValue() const
 {
 	return m_firstId;
 }
 
-std::variant<double*, Function*> Function::GetSecondIdValue() const
+std::variant<Variable*, Function*> Function::GetSecondIdValue() const
 {
 	return m_secondId;
 }
@@ -54,18 +55,3 @@ std::string Function::GetName() const
 {
 	return m_name;
 }
-
-//double Function::Result() const
-//{
-//	if (m_firstId != nullptr && m_secondId != nullptr)
-//	{
-//		return
-//			// видимо придется добавить рекурсивный вывод Result если первый id или второй id - функции
-//			m_operator == '*' ? (*m_firstId) * (*m_secondId) :
-//			m_operator == '+' ? (*m_firstId) + (*m_secondId) :
-//			m_operator == '-' ? (*m_firstId) - (*m_secondId) :
-//			*m_firstId / *m_secondId;
-//	}
-//
-//	return m_firstId == nullptr ? NAN : *m_firstId;
-//}

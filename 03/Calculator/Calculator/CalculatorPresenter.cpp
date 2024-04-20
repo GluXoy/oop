@@ -25,10 +25,10 @@ bool CalculatorPresenter::ParseVarStatement(const std::string& statement, Variab
         {
             throw std::invalid_argument("This id was declared before!");
         }
-        var.m_name = match[1];
-        var.m_value = NAN;
-        m_calc.vars.insert(var);
-        m_calc.ids.insert(var.m_name);
+        var.SetName(match[1]);
+        var.SetValue(NAN);
+        m_calc.vars.emplace(var.GetName(), var);
+        m_calc.ids.insert(var.GetName());
 
         return true;
     }
@@ -55,28 +55,23 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
     }
 
     std::string letValue = match[2];
-    if (m_calc.ids.find(letValue) != m_calc.ids.end())
+
+    if (m_calc.vars.find(letValue) != m_calc.vars.end())
     {
-        for (auto& id : m_calc.vars)
+        if (m_calc.vars.find(match[1]) != m_calc.vars.end())
         {
-            if (id.m_name == letValue)
-            {
-                auto it = m_calc.vars.find(Variable(match[1]));
-                if (it != m_calc.vars.end())
-                {
-                    it->m_value = id.m_value;
-                }
-                else
-                {
-                    var.m_name = match[1];
-                    var.m_value = id.m_value;
-                    m_calc.vars.insert(var);
-                    m_calc.ids.insert(var.m_name);
-                }
-                return true;
-            }
+            m_calc.vars[match[1]].SetValue(m_calc.vars[letValue].GetValue());
         }
+        else
+        {
+            var.SetName(match[1]);
+            var.SetValue(m_calc.vars[letValue].GetValue());
+            m_calc.vars.emplace(var.GetName(), var);
+            m_calc.ids.insert(var.GetName());
+        }
+        return true;
     }
+
 
     if (IsValidIdentifier(letValue))
     {
@@ -85,17 +80,16 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
 
     double value = std::stod(letValue);
 
-    auto it = m_calc.vars.find(Variable(match[1]));
-    if (it != m_calc.vars.end())
+    if (m_calc.vars.find(match[1]) != m_calc.vars.end())
     {
-        it->m_value = value;
+        m_calc.vars[match[1]].SetValue(value);
     }
     else
     {
-        var.m_name = match[1];
-        var.m_value = value;
-        m_calc.vars.insert(var);
-        m_calc.ids.insert(var.m_name);
+        var.SetName(match[1]);
+        var.SetValue(value);
+        m_calc.vars.emplace(var.GetName(), var);
+        m_calc.ids.insert(var.GetName());
     }
 
     return true;
@@ -120,10 +114,9 @@ void CalculatorPresenter::SetIdValue(Function& fn, std::string idName, int idPos
         }
     }
 
-    auto it = m_calc.vars.find(Variable(idName));
-    if (it != m_calc.vars.end())
+    if (m_calc.vars.find(idName) != m_calc.vars.end())
     {
-        idPos == 1 ? fn.SetFirstIdValue(&it->m_value) : fn.SetSecondIdValue(&it->m_value);
+        idPos == 1 ? fn.SetFirstIdValue(m_calc.vars[idName]) : fn.SetSecondIdValue(m_calc.vars[idName]);
     }
 }
 
@@ -191,16 +184,16 @@ bool CalculatorPresenter::InputHandler()
     //}
 
     return
+        ParseFnStatement(commandLine) ? true :
         ParseVarStatement(commandLine, var) ? true :
-        ParseLetStatement(commandLine, var) ? true :
-        ParseFnStatement(commandLine);
+        ParseLetStatement(commandLine, var);
 }
 
 void CalculatorPresenter::PrintVars()
 {
-    for (const auto& var : m_calc.vars)
+    for (auto& var : m_calc.vars)
     {
-        std::cout << var.m_name << " : " << var.m_value << std::endl;
+        std::cout << var.first << " : " << var.second.GetValue() << std::endl;
     }
 }
 

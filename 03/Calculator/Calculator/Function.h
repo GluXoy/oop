@@ -1,19 +1,20 @@
 #pragma once
 #include <string>
 #include <variant>
+#include "Variable.h"
 
 class Function
 {
 public:
 	bool isInitialized = false;
-	void SetFirstIdValue(double* id);
+	void SetFirstIdValue(Variable& id);
 	void SetFirstIdValue(Function& id);
 	void SetSecondIdValue(Function& id);
-	void SetSecondIdValue(double* id);
+	void SetSecondIdValue(Variable& id);
 	void SetOperator(char op);
 	char GetOperator() const;
-	std::variant<double*, Function*> GetFirstIdValue() const;
-	std::variant<double*, Function*> GetSecondIdValue() const;
+	std::variant<Variable*, Function*> GetFirstIdValue() const;
+	std::variant<Variable*, Function*> GetSecondIdValue() const;
 	void SetName(std::string name); 
 	std::string GetName() const;
 	//bool operator<(const Function& other) const
@@ -24,7 +25,7 @@ public:
 
 private:
 	std::string m_name;
-	std::variant<double*, Function*> m_firstId;
-	std::variant<double*, Function*> m_secondId;
+	std::variant<Variable*, Function*> m_firstId;
+	std::variant<Variable*, Function*> m_secondId;
 	mutable char m_operator = '\0';
 };

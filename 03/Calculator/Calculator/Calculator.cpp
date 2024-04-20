@@ -1,7 +1,6 @@
 #include "Calculator.h"
 #include <string>
 #include "Variable.h"
-#include <unordered_set>
 #include "Function.h"
 #include <variant>
 #include <vector>
@@ -93,22 +92,22 @@ double Calculator::Operate(double val1, double val2, char op)
     }
 }
 
-double Calculator::CalculateFn(std::variant<double*, Function*> f)
+double Calculator::CalculateFn(std::variant<Variable*, Function*> f)
 {
     //если double 
-    if (std::holds_alternative<double*>(f))
+    if (std::holds_alternative<Variable*>(f))
     {
-        if (std::get<double*>(f) == nullptr)
+        if (std::get<Variable*>(f) == nullptr)
         {
             return NAN;
         }
-        return *std::get<double*>(f);
+        return std::get<Variable*>(f)->GetValue();
     }
     
     //если Function
     Function* fn = std::get<Function*>(f);
-    std::variant<double*, Function*> firstId = fn->GetFirstIdValue();
-    std::variant<double*, Function*> secondId = fn->GetSecondIdValue();
+    std::variant<Variable*, Function*> firstId = fn->GetFirstIdValue();
+    std::variant<Variable*, Function*> secondId = fn->GetSecondIdValue();
 
     double val1 = CalculateFn(firstId);
     double val2 = CalculateFn(secondId);
@@ -123,8 +122,8 @@ double Calculator::Calculate(std::string idName)
     {
         if (idName == f.GetName())
         {
-            std::variant<double*, Function*> firstId = f.GetFirstIdValue();
-            std::variant<double*, Function*> secondId = f.GetSecondIdValue();
+            std::variant<Variable*, Function*> firstId = f.GetFirstIdValue();
+            std::variant<Variable*, Function*> secondId = f.GetSecondIdValue();
             double val1 = CalculateFn(firstId);
             double val2 = CalculateFn(secondId);
 
@@ -133,9 +132,10 @@ double Calculator::Calculate(std::string idName)
         }
     }
 
-    auto it2 = vars.find(Variable(idName));
+    if (vars.find(idName) != vars.end())
     {
-        return it2->m_value;
+        return vars[idName].GetValue();
     }
+
     throw std::invalid_argument("Unknown id!");
 }
