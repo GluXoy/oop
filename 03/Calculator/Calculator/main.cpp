@@ -14,7 +14,10 @@ int main()
         std::cout << "Enter instruction: ";
         try
         {
-            calcPres.InputHandler();
+            if (!calcPres.InputHandler())
+            {
+                std::cout << "Incorrect expression format!" << std::endl;
+            }
         }
         catch (const std::exception& ex)
         {

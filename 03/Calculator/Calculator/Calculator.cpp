@@ -6,77 +6,65 @@
 #include <vector>
 #include <iostream>
 
-//double Calculator::CalculateFn(std::variant<double*, Function*> f)
-//{
-//    if (((std::holds_alternative<Function*>(f) && std::get<Function*>(f)->GetFirstIdValue() != nullptr) ||
-//        (std::holds_alternative<double*>(f) && std::get<double*>(f) != nullptr))
-//        &&
-//        ((std::holds_alternative<Function*>(f) && std::get<Function*>(f) != nullptr) ||
-//            (std::holds_alternative<double*>(f) && std::get<double*>(f) != nullptr)))
-//    {
-//        if (std::holds_alternative<Function*>(f))
-//        {
-//            // Получаем значения первого и второго аргументов
-//            auto firstId = (std::get<Function*>(f))->GetFirstIdValue();
-//            auto secondId = (std::get<Function*>(f))->GetSecondIdValue();
-//            // Проверяем, не являются ли аргументы числами
-//            if (std::holds_alternative<double*>(firstId) && std::holds_alternative<double*>(secondId))
-//            {
-//                // Оба аргумента - числа
-//                double val1 = *std::get<double*>(firstId);
-//                double val2 = *std::get<double*>(secondId);
-//                // Возвращаем результат в зависимости от оператора
-//                return (std::get<Function*>(f))->GetOperator() == '*' ? val1 * val2 :
-//                    (std::get<Function*>(f))->GetOperator() == '+' ? val1 + val2 :
-//                    (std::get<Function*>(f))->GetOperator() == '-' ? val1 - val2 :
-//                    val1 / val2;
-//            }
-//            else if (std::holds_alternative<Function*>(firstId) && std::holds_alternative<Function*>(secondId))
-//            {
-//                // Оба аргумента - функции, рекурсивно вызываем CalculateFn для каждого из них
-//                double val1 = CalculateFn(std::get<Function*>(firstId));
-//                double val2 = CalculateFn(std::get<Function*>(secondId));
-//                // Возвращаем результат в зависимости от оператора
-//                return (std::get<Function*>(f))->GetOperator() == '*' ? val1 * val2 :
-//                    (std::get<Function*>(f))->GetOperator() == '+' ? val1 + val2 :
-//                    (std::get<Function*>(f))->GetOperator() == '-' ? val1 - val2 :
-//                    val1 / val2;
-//            }
-//            else
-//            {
-//                // Обработка разных типов аргументов: игнорирование одного из них и использование другого
-//                if (std::holds_alternative<Function*>(firstId))
-//                {
-//                    // Используем только первый аргумент
-//                    double val1 = CalculateFn(std::get<Function*>(firstId));
-//                    double val2 = *std::get<double*>(secondId);
-//                    // Возвращаем результат в зависимости от оператора
-//                    return (std::get<Function*>(f))->GetOperator() == '*' ? val1 * val2 :
-//                        (std::get<Function*>(f))->GetOperator() == '+' ? val1 + val2 :
-//                        (std::get<Function*>(f))->GetOperator() == '-' ? val1 - val2 :
-//                        val1 / val2;
-//                }
-//                else if (std::holds_alternative<Function*>(secondId))
-//                {
-//                    // Используем только второй аргумент
-//                    double val1 = *std::get<double*>(firstId);
-//                    double val2 = CalculateFn(std::get<Function*>(secondId));
-//                    // Возвращаем результат в зависимости от оператора
-//                    return (std::get<Function*>(f))->GetOperator() == '*' ? val1 * val2 :
-//                        (std::get<Function*>(f))->GetOperator() == '+' ? val1 + val2 :
-//                        (std::get<Function*>(f))->GetOperator() == '-' ? val1 - val2 :
-//                        val1 / val2;
-//                }
-//            }
-//        }
-//    }
-//
-//	//return m_firstId == nullptr ? NAN : *m_firstId;
-//}
+bool Calculator::IsVariableDeclared(std::string idName) const
+{
+    if (vars.find(idName) != vars.end())
+    {
+        return true;
+    }
+    return false;
+}
 
+bool Calculator::IsFunctionDeclared(std::string idName) const
+{
+    if (fns.find(idName) != fns.end())
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Calculator::WasIdDeclared(std::string idName) const
+{
+    if (ids.find(idName) == ids.end())
+    {
+        return false;
+    }
+    return true;
+}
+
+void Calculator::AddFunction(Function& fn)
+{
+    if (ids.find(fn.GetName()) != ids.end())
+    {
+        throw std::invalid_argument("This id was declared before!");
+    }
+    fns.emplace(fn.GetName(), fn);
+    ids.insert(fn.GetName());
+}
+
+void Calculator::AddVariable(Variable& var)
+{
+    if (ids.find(var.GetName()) != ids.end())
+    {
+        throw std::invalid_argument("This id was declared before!");
+    }
+    vars.emplace(var.GetName(), var);
+    ids.insert(var.GetName());
+}
+
+Function* Calculator::GetFunction(std::string idName)
+{
+    return &fns[idName];
+}
+
+Variable* Calculator::GetVariable(std::string idName)
+{
+    return &vars[idName];
+}
 
 double Calculator::Operate(double val1, double val2, char op)
-{
+{ 
     switch (op)
     {
     case '*':

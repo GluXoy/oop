@@ -19,30 +19,23 @@ bool CalculatorPresenter::ParseVarStatement(const std::string& statement, Variab
 {
     std::regex varRegex("^var\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*$");
     std::smatch match;
-    if (std::regex_match(statement, match, varRegex))
-    {
-        if (m_calc.ids.find(match[1]) != m_calc.ids.end())
-        {
-            throw std::invalid_argument("This id was declared before!");
-        }
-        var.SetName(match[1]);
-        var.SetValue(NAN);
-        m_calc.vars.emplace(var.GetName(), var);
-        m_calc.ids.insert(var.GetName());
 
-        return true;
-    }
-    return false;
-}
-
-bool CalculatorPresenter::WasIdDeclared(std::string idName)
-{
-    if (m_calc.ids.find(idName) == m_calc.ids.end())
+    if (!std::regex_match(statement, match, varRegex))
     {
         return false;
     }
+
+    if (m_calc.IsVariableDeclared(match[1]))
+    {
+        throw std::invalid_argument("This id was declared before!");
+    }
+
+    var.SetName(match[1]);
+    var.SetValue(NAN);
+    m_calc.AddVariable(var);
     return true;
 }
+
 
 bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variable& var)
 {
@@ -50,28 +43,26 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
     std::smatch match;
     if (!std::regex_match(statement, match, letRegex))
     {
-        std::cout << "Incorrect signable format!" << std::endl;
         return false;
     }
 
+    std::string letName = match[1];
     std::string letValue = match[2];
 
-    if (m_calc.vars.find(letValue) != m_calc.vars.end())
+    if (m_calc.IsVariableDeclared(letValue))
     {
-        if (m_calc.vars.find(match[1]) != m_calc.vars.end())
+        if (m_calc.IsVariableDeclared(letName))
         {
-            m_calc.vars[match[1]].SetValue(m_calc.vars[letValue].GetValue());
+            m_calc.GetVariable(letName)->SetValue(m_calc.GetVariable(letValue)->GetValue());
         }
         else
         {
-            var.SetName(match[1]);
-            var.SetValue(m_calc.vars[letValue].GetValue());
-            m_calc.vars.emplace(var.GetName(), var);
-            m_calc.ids.insert(var.GetName());
+            var.SetName(letName);
+            var.SetValue(m_calc.GetVariable(letValue)->GetValue());
+            m_calc.AddVariable(var);
         }
         return true;
     }
-
 
     if (IsValidIdentifier(letValue))
     {
@@ -80,39 +71,28 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
 
     double value = std::stod(letValue);
 
-    if (m_calc.vars.find(match[1]) != m_calc.vars.end())
+    if (m_calc.IsVariableDeclared(letName))
     {
-        m_calc.vars[match[1]].SetValue(value);
+        m_calc.GetVariable(letName)->SetValue(value);
     }
     else
     {
-        var.SetName(match[1]);
+        var.SetName(letName);
         var.SetValue(value);
-        m_calc.vars.emplace(var.GetName(), var);
-        m_calc.ids.insert(var.GetName());
+        m_calc.AddVariable(var);
     }
-
     return true;
-}
-
-void CalculatorPresenter::CheckIfIdWasDeclared(std::string idName)
-{
-    if (m_calc.ids.find(idName) == m_calc.ids.end())
-    {
-        throw std::invalid_argument("Unknown identifier - " + std::string(idName) + " - in the expression!");
-    }
 }
 
 void CalculatorPresenter::SetIdValue(Function& fn, std::string idName, int idPos)
 {
-    if (m_calc.fns.find(idName) != m_calc.fns.end())
+    if (m_calc.IsFunctionDeclared(idName))
     {
-        idPos == 1 ? fn.SetFirstIdValue(m_calc.fns[idName]) : fn.SetSecondIdValue(m_calc.fns[idName]);
-        return;
+        idPos == 1 ? fn.SetFirstIdValue(*m_calc.GetFunction(idName)) : fn.SetSecondIdValue(*m_calc.GetFunction(idName));
     }
-    else if (m_calc.vars.find(idName) != m_calc.vars.end())
+    else if (m_calc.IsVariableDeclared(idName))
     {
-        idPos == 1 ? fn.SetFirstIdValue(m_calc.vars[idName]) : fn.SetSecondIdValue(m_calc.vars[idName]);
+        idPos == 1 ? fn.SetFirstIdValue(*m_calc.GetVariable(idName)) : fn.SetSecondIdValue(*m_calc.GetVariable(idName));
     }
     else
     {
@@ -124,39 +104,44 @@ bool CalculatorPresenter::ParseFnStatement(const std::string& statement)
 {
     std::regex fnRegex("^fn\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*=\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*(?:([+\\-*/])\\s*([a-zA-Z_][a-zA-Z0-9_]*))?\\s*$");
     std::smatch match;
-    if (std::regex_match(statement, match, fnRegex))
+
+    if (!std::regex_match(statement, match, fnRegex))
     {
-        if (m_calc.ids.find(match[1]) != m_calc.ids.end())
-        {
-            throw std::invalid_argument("This id was declared before!");
-        }
-
-        //поменять название на BreakIf..
-        CheckIfIdWasDeclared(match[2]);
-
-        Function fn;
-
-        int firstPosId = 1;
-        int secondPosId = 2;
-
-        std::string operation = match[3];
-        std::string secondId = match[4];
-        if (!operation.empty() && !secondId.empty())
-        {
-            //поменять название на BreakIf..
-            CheckIfIdWasDeclared(secondId);
-            fn.SetOperator(operation[0]);
-            SetIdValue(fn, secondId, secondPosId);
-        }
-        fn.SetName(match[1]);
-
-        SetIdValue(fn, match[2], firstPosId);
-
-        m_calc.fns.emplace(fn.GetName(), fn);
-        m_calc.ids.insert(fn.GetName());
-        return true;
+        return false;
     }
-    return false;
+
+    Function fn;
+    std::string fnName = match[1];
+    std::string firstId = match[2];
+    std::string operation = match[3];
+    std::string secondId = match[4];
+
+    if (m_calc.WasIdDeclared(fnName))
+    {
+        throw std::invalid_argument("This id was declared before!");
+    }
+
+    if (!m_calc.WasIdDeclared(firstId))
+    {
+        throw std::invalid_argument("Unknown identifier - " + firstId + " - in the expression!");
+    }
+
+    if (!operation.empty() && !secondId.empty())
+    {
+        if (!m_calc.WasIdDeclared(secondId))
+        {
+            throw std::invalid_argument("Unknown identifier - " + secondId + " - in the expression!");
+        }
+
+        fn.SetOperator(operation[0]);
+        SetIdValue(fn, secondId, 2);
+    }
+
+    fn.SetName(fnName);
+    SetIdValue(fn, firstId, 1);
+
+    m_calc.AddFunction(fn);
+    return true;
 }
 
 bool CalculatorPresenter::InputHandler()
@@ -166,17 +151,17 @@ bool CalculatorPresenter::InputHandler()
 
     Variable var;
 
-    if (commandLine == "PrintVars")
-    {
-        PrintVars();
-        return true;
-    }
-    else if (commandLine.substr(0, 6) == "Print ")
+    if (commandLine.substr(0, 6) == "Print ")
     {
         std::string idName = commandLine.substr(6);
         Print(idName);
         return true;
     }
+    //else if (commandLine == "PrintVars")
+    //{
+    //    PrintVars();
+    //    return true;
+    //}
     //else if (commandLine == "PrintFns")
     //{
     //    PrintFns();
@@ -189,13 +174,13 @@ bool CalculatorPresenter::InputHandler()
         ParseFnStatement(commandLine);
 }
 
-void CalculatorPresenter::PrintVars()
-{
-    for (auto& var : m_calc.vars)
-    {
-        std::cout << var.first << " : " << var.second.GetValue() << std::endl;
-    }
-}
+//void CalculatorPresenter::PrintVars()
+//{
+//    for (auto& var : m_calc.vars)
+//    {
+//        std::cout << var.first << " : " << var.second.GetValue() << std::endl;
+//    }
+//}
 
 //void CalculatorPresenter::PrintFns()
 //{
@@ -208,7 +193,7 @@ void CalculatorPresenter::PrintVars()
 
 void CalculatorPresenter::Print(std::string idName)
 {
-    if (m_calc.ids.find(idName) != m_calc.ids.end())
+    if (m_calc.WasIdDeclared(idName))
     {
         std::cout << m_calc.Calculate(idName) << std::endl;
     }

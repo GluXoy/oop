@@ -10,8 +10,8 @@
 #include "../Calculator/CalculatorPresenter.h"
 
 
-TEST_CASE("Check Calculator Class")
-{
+//TEST_CASE("Check Calculator Class")
+//{
 
 	//SECTION("Function's firstId point to Variable, should return Variable value")
 	//{
@@ -413,66 +413,102 @@ TEST_CASE("Check Calculator Class")
 	//	CHECK(calc.Calculate("C") == 11.0);
 	//}
 
-	SECTION("Fibbonachi testing")
+//	SECTION("Fibbonachi testing")
+//	{
+//		Calculator calc;
+//
+//		Variable v0;
+//		v0.SetName("v0");
+//		v0.SetValue(0.0);
+//		calc.vars.emplace(v0.GetName(), v0);
+//		calc.ids.insert(v0.GetName());
+//
+//		Variable v1;
+//		v1.SetName("v1");
+//		v1.SetValue(1.0);
+//		calc.vars.emplace(v1.GetName(), v1);
+//		calc.ids.insert(v1.GetName());
+//
+//		Function fb0;
+//		fb0.SetName("fb0");
+//		fb0.SetFirstIdValue(calc.vars["v0"]);
+//		calc.fns.emplace(fb0.GetName(), fb0);
+//		calc.ids.insert(fb0.GetName());
+//
+//		Function fb1;
+//		fb1.SetName("fb1");
+//		fb1.SetFirstIdValue(calc.vars["v1"]);
+//		calc.fns.emplace(fb1.GetName(), fb1);
+//		calc.ids.insert(fb1.GetName());
+//
+//		Function fb2;
+//		fb2.SetName("fb2");
+//		fb2.SetOperator('+');
+//		fb2.SetFirstIdValue(calc.fns["fb0"]);
+//		fb2.SetSecondIdValue(calc.fns["fb1"]);
+//
+//
+//		calc.fns.emplace(fb2.GetName(), fb2);
+//		calc.ids.insert(fb2.GetName());
+//		CHECK(calc.Calculate(fb2.GetName()) == 1.0);
+//
+//		Function fb3;
+//		fb3.SetName("fb3");
+//		fb3.SetOperator('+');
+//
+//		fb3.SetFirstIdValue(calc.fns["fb1"]);
+//		fb3.SetSecondIdValue(calc.fns["fb2"]);
+//
+//
+//		calc.fns.emplace(fb3.GetName(), fb3);
+//		calc.ids.insert(fb3.GetName());
+//
+//
+//		CHECK(calc.Calculate(fb3.GetName()) == 2.0);
+//	}
+//}
+
+TEST_CASE("Check CalculatorPresenter Class")
+{
+	SECTION("Fibonacci testing")
 	{
 		Calculator calc;
 
 		Variable v0;
 		v0.SetName("v0");
 		v0.SetValue(0.0);
-		calc.vars.emplace(v0.GetName(), v0);
-		calc.ids.insert(v0.GetName());
+		calc.AddVariable(v0);
 
 		Variable v1;
 		v1.SetName("v1");
 		v1.SetValue(1.0);
-		calc.vars.emplace(v1.GetName(), v1);
-		calc.ids.insert(v1.GetName());
+		calc.AddVariable(v1);
+
 
 		Function fb0;
 		fb0.SetName("fb0");
-		fb0.SetFirstIdValue(calc.vars["v0"]);
-		calc.fns.emplace(fb0.GetName(), fb0);
-		calc.ids.insert(fb0.GetName());
+		fb0.SetFirstIdValue(*calc.GetVariable("v0"));
+		calc.AddFunction(fb0);
 
 		Function fb1;
 		fb1.SetName("fb1");
-		fb1.SetFirstIdValue(calc.vars["v1"]);
-		calc.fns.emplace(fb1.GetName(), fb1);
-		calc.ids.insert(fb1.GetName());
+		fb1.SetFirstIdValue(*calc.GetVariable("v1"));
+		calc.AddFunction(fb1);
 
-		Function fb2;
-		fb2.SetName("fb2");
-		fb2.SetOperator('+');
-		fb2.SetFirstIdValue(calc.fns["fb0"]);
-		fb2.SetSecondIdValue(calc.fns["fb1"]);
+		for (int i = 2; i < 4; ++i)
+		{
+			Function fn;
+			std::string fnName = "fb" + std::to_string(i);
+			fn.SetName(fnName);
+			fn.SetOperator('+');
+			fn.SetFirstIdValue(*calc.GetFunction("fb" + std::to_string(i - 1)));
+			fn.SetSecondIdValue(*calc.GetFunction("fb" + std::to_string(i - 2)));
 
-
-		calc.fns.emplace(fb2.GetName(), fb2);
-		calc.ids.insert(fb2.GetName());
-		CHECK(calc.Calculate(fb2.GetName()) == 1.0);
-
-		Function fb3;
-		fb3.SetName("fb3");
-		fb3.SetOperator('+');
-
-		fb3.SetFirstIdValue(calc.fns["fb1"]);
-		fb3.SetSecondIdValue(calc.fns["fb2"]);
-
-
-		calc.fns.emplace(fb3.GetName(), fb3);
-		calc.ids.insert(fb3.GetName());
-
-
-		CHECK(calc.Calculate(fb3.GetName()) == 2.0);
-	}
-}
-
-TEST_CASE("Check CalculatorPresenter Class")
-{
-	SECTION("Fibbonachi testing")
-	{
-
+			calc.AddFunction(fn);
+		}
+		CHECK(calc.Calculate("fb3") == 2.0);
+		calc.GetVariable("v0")->SetValue(5.0);
+		CHECK(calc.Calculate("fb3") == 7.0);
 	}
 }
 
