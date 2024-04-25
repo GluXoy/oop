@@ -16,8 +16,8 @@ private:
 	//Function CreateFunction();
 	//Variable CreateVariable();
 	bool IsValidIdentifier(const std::string& identifier);
-	bool ParseVarStatement(const std::string& statement, Variable& var);
-	bool ParseLetStatement(const std::string& statement, Variable& var);
+	bool ParseVarStatement(const std::string& statement);
+	bool ParseLetStatement(const std::string& statement);
 	bool ParseFnStatement(const std::string& statement);
 	void SetIdValue(Function& fn, std::string idName, int idPos);
 };

@@ -15,7 +15,7 @@ bool CalculatorPresenter::IsValidIdentifier(const std::string& identifier)
     return std::regex_match(identifier, identifierRegex);
 }
 
-bool CalculatorPresenter::ParseVarStatement(const std::string& statement, Variable& var)
+bool CalculatorPresenter::ParseVarStatement(const std::string& statement)
 {
     std::regex varRegex("^var\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*$");
     std::smatch match;
@@ -24,6 +24,8 @@ bool CalculatorPresenter::ParseVarStatement(const std::string& statement, Variab
     {
         return false;
     }
+
+    Variable var;
 
     if (m_calc.IsVariableDeclared(match[1]))
     {
@@ -37,7 +39,7 @@ bool CalculatorPresenter::ParseVarStatement(const std::string& statement, Variab
 }
 
 
-bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variable& var)
+bool CalculatorPresenter::ParseLetStatement(const std::string& statement)
 {
     std::regex letRegex("^let\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*=\\s*([a-zA-Z_][a-zA-Z0-9_]*|[0-9]+\\.[0-9]+)\\s*$");
     std::smatch match;
@@ -45,6 +47,7 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
     {
         return false;
     }
+    Variable var;
 
     std::string letName = match[1];
     std::string letValue = match[2];
@@ -53,7 +56,7 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
     {
         if (m_calc.IsVariableDeclared(letName))
         {
-            m_calc.GetVariable(letName)->SetValue(m_calc.GetVariable(letValue)->GetValue());
+            m_calc.ChangeVariable(letName, m_calc.GetVariable(letValue)->GetValue());
         }
         else
         {
@@ -61,6 +64,7 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
             var.SetValue(m_calc.GetVariable(letValue)->GetValue());
             m_calc.AddVariable(var);
         }
+        //m_calc.ChangeFnResults();
         return true;
     }
 
@@ -73,7 +77,7 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
 
     if (m_calc.IsVariableDeclared(letName))
     {
-        m_calc.GetVariable(letName)->SetValue(value);
+        m_calc.ChangeVariable(letName, value);
     }
     else
     {
@@ -81,6 +85,7 @@ bool CalculatorPresenter::ParseLetStatement(const std::string& statement, Variab
         var.SetValue(value);
         m_calc.AddVariable(var);
     }
+    //m_calc.ChangeFnResults();
     return true;
 }
 
@@ -149,46 +154,30 @@ bool CalculatorPresenter::InputHandler()
     std::string commandLine;
     std::getline(std::cin, commandLine);
 
-    Variable var;
-
     if (commandLine.substr(0, 6) == "Print ")
     {
         std::string idName = commandLine.substr(6);
         Print(idName);
         return true;
     }
-    //else if (commandLine == "PrintVars")
-    //{
-    //    PrintVars();
-    //    return true;
-    //}
-    //else if (commandLine == "PrintFns")
-    //{
-    //    PrintFns();
-    //    return true;
-    //}
-
-    return
-        ParseVarStatement(commandLine, var) ? true :
-        ParseLetStatement(commandLine, var) ? true :
-        ParseFnStatement(commandLine);
+    else if (commandLine == "PrintVars")
+    {
+        m_calc.PrintVars();
+        return true;
+    }
+    else if (commandLine == "PrintFns")
+    {
+        m_calc.PrintFns();
+        return true;
+    }
+    else
+    {
+        return
+            ParseVarStatement(commandLine) ? true :
+            ParseLetStatement(commandLine) ? true :
+            ParseFnStatement(commandLine);
+    }
 }
-
-//void CalculatorPresenter::PrintVars()
-//{
-//    for (auto& var : m_calc.vars)
-//    {
-//        std::cout << var.first << " : " << var.second.GetValue() << std::endl;
-//    }
-//}
-
-//void CalculatorPresenter::PrintFns()
-//{
-//    for (const auto& fn : m_calc.fns)
-//    {
-//        std::cout << fn.GetName() << " : " << fn.Result() << std::endl;
-//    }
-//}
 
 
 void CalculatorPresenter::Print(std::string idName)

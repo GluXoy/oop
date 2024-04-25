@@ -2,22 +2,22 @@
 #include "Variable.h"
 #include <cmath>
 
-void Function::SetFirstIdValue(Variable& id) 
+void Function::SetFirstIdValue(const Variable& id)
 {
 	m_firstId = &id;
 }
 
-void Function::SetFirstIdValue(Function& id)
+void Function::SetFirstIdValue(const Function& id)
 {
 	m_firstId = &id;
 }
 
-void Function::SetSecondIdValue(Variable& id)
+void Function::SetSecondIdValue(const Variable& id)
 { 
 	m_secondId = &id;
 }
 
-void Function::SetSecondIdValue(Function& id)
+void Function::SetSecondIdValue(const Function& id)
 {
 	m_secondId = &id;
 }
@@ -32,12 +32,12 @@ char Function::GetOperator() const
 	return m_operator;
 }
 
-std::variant<Variable*, Function*> Function::GetFirstIdValue() const
+std::variant<const Variable*, const Function*> Function::GetFirstIdValue() const
 {
 	return m_firstId;
 }
 
-std::variant<Variable*, Function*> Function::GetSecondIdValue() const
+std::variant<const Variable*, const Function*> Function::GetSecondIdValue() const
 {
 	return m_secondId;
 }
@@ -50,4 +50,14 @@ void Function::SetName(std::string name)
 std::string Function::GetName() const
 {
 	return m_name;
+}
+
+double Function::GetResult() const
+{
+	return m_result;
+}
+
+void Function::SetResult(double res)
+{
+	m_result = res;
 }
