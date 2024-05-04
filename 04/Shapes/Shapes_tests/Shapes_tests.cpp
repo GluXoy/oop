@@ -11,6 +11,20 @@
 #include <vector>
 #include <memory>
 
+TEST_CASE("Self containment")
+{
+	auto a = std::make_unique<CCompound>();
+	auto b = std::make_unique<CCompound>();
+	auto c = std::make_unique<CParallelepiped>(1000, 1, 1, 1);
+	auto& refA = *a;
+	auto& refb = *b;
+	a->AddChildBody(std::move(b));
+	refb.AddChildBody(std::move(c));
+	CHECK(a->GetVolume() == 1);
+	refb.AddChildBody(std::move(a));
+	refb.GetVolume();
+}
+
 TEST_CASE("Check Shapes Constructors")
 {
 	SECTION("CSphere constructor should initialized fields")
@@ -145,26 +159,26 @@ TEST_CASE("Manipulate with public fields")
 	}
 }
 
-TEST_CASE("Check CCompound")
-{
-	SECTION("...")
-	{
-		auto sphere = std::make_unique<CSphere>(1000, 1);
-		auto cone = std::make_unique<CCone>(1000, 1, 1);
-		auto cylinder = std::make_unique<CCylinder>(1000, 1, 1);
-		auto plpd = std::make_unique<CParallelepiped>(1000, 1, 1, 1);
-
-		auto compBody = std::make_unique<CCompound>();
-		compBody->AddChildBody(std::move(sphere));
-		compBody->AddChildBody(std::move(cone));
-
-		CCompound compBody2;
-		compBody2.AddChildBody(std::move(compBody));
-
-		//std::cout << compBody->m_childs[0]->ToString() << std::endl;
-		//std::cout << compBody->m_childs[1]->ToString() << std::endl;
-
-		std::cout << compBody2.m_childs[0]->ToString() << std::endl;
-		std::cout << compBody2.m_childs[0]->ToString() << std::endl;
-	}
-}
+//TEST_CASE("Check CCompound")
+//{
+//	SECTION("...")
+//	{
+//		auto sphere = std::make_unique<CSphere>(1000, 1);
+//		auto cone = std::make_unique<CCone>(1000, 1, 1);
+//		auto cylinder = std::make_unique<CCylinder>(1000, 1, 1);
+//		auto plpd = std::make_unique<CParallelepiped>(1000, 1, 1, 1);
+//
+//		auto compBody = std::make_unique<CCompound>();
+//		compBody->AddChildBody(std::move(sphere));
+//		compBody->AddChildBody(std::move(cone));
+//
+//		CCompound compBody2;
+//		compBody2.AddChildBody(std::move(compBody));
+//
+//		//std::cout << compBody->m_childs[0]->ToString() << std::endl;
+//		//std::cout << compBody->m_childs[1]->ToString() << std::endl;
+//
+//		std::cout << compBody2.m_childs[0]->ToString() << std::endl;
+//		std::cout << compBody2.m_childs[0]->ToString() << std::endl;
+//	}
+//}
