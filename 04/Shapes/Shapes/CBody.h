@@ -1,18 +1,18 @@
 #pragma once
 #include <string>
-
+#include <iostream>
 class CBody
 {
 public:
 	CBody(const std::string& type, double density);
-	CBody() = delete;
 
 	double GetDensity() const;
 	virtual double GetVolume() const = 0;
 	double GetMass() const;
 	std::string ToString() const;
 
-	virtual ~CBody() = default;
+	//вы€снить дл€ чего он нужен
+	virtual ~CBody() { std::cout << "~CBody()" << std::endl; };
 protected:
 	double m_density;
 private:
