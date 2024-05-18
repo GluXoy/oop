@@ -2,7 +2,145 @@
 #include <iostream>
 #include <set>
 #include <tuple>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
+CDate& CDate::operator =(const CDate& other)
+{
+	if (this != &other)
+	{
+		m_timestamp = other.m_timestamp;
+	}
+	return *this;
+}
+
+CDate CDate::operator +(unsigned int offset) const
+{
+	CDate res(m_timestamp + offset);
+	return res;
+}
+
+CDate CDate::operator -(unsigned int offset) const
+{
+	CDate res(m_timestamp - offset);
+	return res;
+}
+
+int CDate::operator -(const CDate& other) const
+{
+	return m_timestamp - other.m_timestamp;
+}
+
+CDate& CDate::operator +=(unsigned int offset)
+{
+	m_timestamp += offset;
+	return *this;
+}
+
+CDate& CDate::operator -=(unsigned int offset)
+{
+	m_timestamp -= offset;
+	return *this;
+}
+
+bool CDate::operator ==(const CDate& other) const
+{
+	return m_timestamp == other.m_timestamp;
+}
+
+bool CDate::operator !=(const CDate& other) const
+{
+	return m_timestamp != other.m_timestamp;
+}
+
+bool CDate::operator <(const CDate& other) const
+{
+	return m_timestamp < other.m_timestamp;
+}
+
+bool CDate::operator>(const CDate& other) const
+{
+	return m_timestamp > other.m_timestamp;
+}
+
+bool CDate::operator<=(const CDate& other) const
+{
+	return m_timestamp <= other.m_timestamp;
+}
+
+bool CDate::operator>=(const CDate& other) const
+{
+	return m_timestamp >= other.m_timestamp;
+}
+
+CDate& CDate::operator++()
+{
+	++m_timestamp;
+	return *this;
+}
+
+CDate CDate::operator++(int)
+{
+	CDate temp = *this;
+	++m_timestamp;
+	return temp;
+}
+
+CDate& CDate::operator--()
+{
+	--m_timestamp;
+	return *this;
+}
+
+CDate CDate::operator--(int)
+{
+	CDate temp = *this;
+	--m_timestamp;
+	return temp;
+}
+
+std::ostream& operator <<(std::ostream& os, const CDate& date)
+{
+	if (!date.IsValid())
+	{
+		os << "INVALID";
+	}
+	else
+	{
+		os << std::setw(2) << std::setfill('0') << date.GetDay() << '/'
+			<< std::setw(2) << std::setfill('0') << static_cast<unsigned int>(date.GetMonth()) << '/'
+			<< date.GetYear();
+	}
+	return os;
+}
+
+std::istream& operator >>(std::istream& is, CDate& date)
+{
+	std::string input;
+	is >> input;
+	std::istringstream iss(input);
+	unsigned int day, month, year;
+	char dot1, dot2;
+
+	if (iss >> day >> dot1 >> month >> dot2 >> year && dot1 == '/' && dot2 == '/')
+	{
+		try
+		{
+			date = CDate(day, static_cast<Month>(month), year);
+		}
+		catch (const std::exception&)
+		{
+			date = CDate(static_cast<unsigned int>(-1));
+		}
+	}
+	else
+	{
+		date = CDate(static_cast<unsigned int>(-1));
+	}
+
+	return is;
+}
 
 bool CDate::IsLeapYear(unsigned int year) const
 {
@@ -92,7 +230,10 @@ CDate::CDate(unsigned int day, Month month, unsigned int year)
 
 CDate::CDate(unsigned int timestamp)
 {
-	/*if (END_YEAR - BEGIN_YEAR)*/
+	if (!(timestamp <= DAYS && timestamp >= 0))
+	{
+		throw std::out_of_range("this day is out of date's range!");
+	}
 	m_timestamp = timestamp;
 }
 
@@ -203,5 +344,5 @@ WeekDay CDate::GetWeekDay() const
 
 bool CDate::IsValid() const
 {
-	return false;
+	return m_timestamp <= DAYS && m_timestamp >= 0;
 }

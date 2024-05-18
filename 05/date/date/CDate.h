@@ -2,9 +2,8 @@
 #include <set>
 #include <map>
 #include <tuple>
+#include <iostream>
 
-
-// ћес€ц
 enum class Month
 {
     JANUARY = 1, FEBRUARY, MARCH, APRIL,
@@ -12,7 +11,6 @@ enum class Month
     OCTOBER, NOVEMBER, DECEMBER
 };
 
-// ƒень недели
 enum class WeekDay
 {
     SUNDAY = 0, MONDAY, TUESDAY, WEDNESDAY,
@@ -23,35 +21,37 @@ enum class WeekDay
 class CDate
 {
 public:
-    // инициализируем дату заданными днем, мес€цем и годом.
-    // примечание: год >= 1970
     CDate(unsigned day, Month month, unsigned int year);
-
-    // инициализируем дату количеством дней, прошедших после 1 €нвар€ 1970 года
-    // например, 2 = 3 €нвар€ 1970, 32 = 2 феврал€ 1970 года и т.д.
     explicit CDate(unsigned int timestamp);
-
-    //  онструктор по умолчанию. —оздаЄт дату, равную 1 €нвар€ 1970.
     CDate();
 
-    // возвращает день мес€ца (от 1 до 31)
     unsigned GetDay() const;
-
-    // возвращает мес€ц
     Month GetMonth() const;
-
-    // возвращает год
     unsigned GetYear() const;
-
-    // возвращает день недели
     WeekDay GetWeekDay() const;
 
-    // возвращает информацию о корректности хранимой даты.
-    // Ќапример, после вызова CDate date(99, static_cast<Month>(99), 10983);
-    // или после:
-    // CDate date(1, January, 1970); --date;
-    // метод date.IsValid() должен вернуть false;
-    bool IsValid() const; // —м. примечание
+    CDate& operator=(const CDate& other);
+
+    CDate operator+(unsigned int offset) const;
+    CDate operator-(unsigned int offset) const;
+    int operator-(const CDate& other) const;
+    CDate& operator+=(unsigned int offset);
+    CDate& operator-=(unsigned int offset);
+    bool operator==(const CDate& other) const;
+    bool operator!=(const CDate& other) const;
+    bool operator <(const CDate& other) const;
+    bool operator >(const CDate& other) const;
+    bool operator <=(const CDate& other) const;
+    bool operator >=(const CDate& other) const;
+    CDate& operator++();      
+    CDate operator++(int);    
+    CDate& operator--();
+    CDate operator--(int);
+
+    friend std::ostream& operator<<(std::ostream& os, const CDate& date);
+    friend std::istream& operator>>(std::istream& is, CDate& date);
+
+    bool IsValid() const;
 
 private:
     const unsigned int BEGIN_YEAR = 1970;
@@ -63,6 +63,7 @@ private:
     const unsigned int LEAP_DAYS_TO_BEGIN_YEAR = 477;
     const unsigned int TOTAL_DAYS_TO_BEGIN_YEAR = (BEGIN_YEAR - 1) * YEAR_DAYS + LEAP_DAYS_TO_BEGIN_YEAR;
     const unsigned int TOTAL_DAYS_TO_END_YEAR = END_YEAR * YEAR_DAYS + 2424;
+    const unsigned int DAYS = TOTAL_DAYS_TO_END_YEAR - TOTAL_DAYS_TO_BEGIN_YEAR - 1;
 
     bool IsLeapYear(unsigned int year) const;
 
