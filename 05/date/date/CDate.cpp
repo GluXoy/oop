@@ -6,6 +6,26 @@
 #include <sstream>
 #include <string>
 
+const std::map<Month, unsigned int> CDate::daysInMonths = {
+	{Month::JANUARY, 31},
+	{Month::FEBRUARY, 28},
+	{Month::MARCH, 31},
+	{Month::APRIL, 30},
+	{Month::MAY, 31},
+	{Month::JUNE, 30},
+	{Month::JULY, 31},
+	{Month::AUGUST, 31},
+	{Month::SEPTEMBER, 30},
+	{Month::OCTOBER, 31},
+	{Month::NOVEMBER, 30},
+	{Month::DECEMBER, 31},
+};
+
+CDate operator+(unsigned int offset, const CDate& date)
+{
+	return CDate(date.m_timestamp + offset);
+}
+
 CDate& CDate::operator =(const CDate& other)
 {
 	if (this != &other)
@@ -121,18 +141,11 @@ std::istream& operator >>(std::istream& is, CDate& date)
 	is >> input;
 	std::istringstream iss(input);
 	unsigned int day, month, year;
-	char dot1, dot2;
+	char slash1, slash2;
 
-	if (iss >> day >> dot1 >> month >> dot2 >> year && dot1 == '/' && dot2 == '/')
+	if (iss >> day >> slash1 >> month >> slash2 >> year && slash1 == '/' && slash2 == '/')
 	{
-		try
-		{
-			date = CDate(day, static_cast<Month>(month), year);
-		}
-		catch (const std::exception&)
-		{
-			date = CDate(static_cast<unsigned int>(-1));
-		}
+		date = CDate(day, static_cast<Month>(month), year);
 	}
 	else
 	{
@@ -142,25 +155,8 @@ std::istream& operator >>(std::istream& is, CDate& date)
 	return is;
 }
 
-bool CDate::IsLeapYear(unsigned int year) const
+bool CDate::IsLeapYear(unsigned int year)
 {
-	//if (year % 4 == 0)
-	//{
-	//	if (year % 100 == 0)
-	//	{
-	//		if (year % 400 == 0)
-	//		{
-	//			return true;
-	//		}
-	//	}
-	//	else
-	//	{
-	//		return true;
-	//	}
-	//}
-
-	//return false;
-
 	return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
@@ -278,31 +274,6 @@ unsigned CDate::GetDay() const {
 
 unsigned CDate::GetYear() const
 {
-	//1
-	//unsigned int totalDays = m_timestamp + TOTAL_DAYS_TO_BEGIN_YEAR;
-	//unsigned int leapDays = totalDays / (4 * YEAR_DAYS) - totalDays / (100 * YEAR_DAYS) + totalDays / (400 * YEAR_DAYS);
-	//totalDays -= leapDays;
-	//leapDays -= LEAP_DAYS_TO_BEGIN_YEAR;
-	//return totalDays / YEAR_DAYS + leapDays / YEAR_DAYS;
-
-
-	//2
-	//unsigned int days = m_timestamp;
-	//unsigned int year = BEGIN_YEAR;
-	//while (true)
-	//{
-	//	unsigned int days_in_year = IsLeapYear(year) ? 366 : 365;
-	//	if (days < days_in_year)
-	//	{
-	//		break;
-	//	}
-	//	days -= days_in_year;
-	//	year++;
-	//}
-
-	//return year;
-
-	//3
 	unsigned int days = m_timestamp + TOTAL_DAYS_TO_BEGIN_YEAR; // количество дней с начала эры
 	const unsigned int days_in_4_years = 1461; // 4 * 365 + 1
 	const unsigned int days_in_100_years = 36524; // 100 * 365 + 25 - 1
@@ -337,9 +308,10 @@ WeekDay CDate::GetWeekDay() const
 {
 	unsigned int totalDays = m_timestamp + TOTAL_DAYS_TO_BEGIN_YEAR;
 
-	unsigned int weekDay = totalDays % WEEK_DAYS;
+	// Коррекция для правильного определения дня недели
+	unsigned int weekDay = (totalDays + 1) % WEEK_DAYS; // Добавляем 1 для коррекции
 
-	return static_cast<WeekDay>((weekDay + 4) % WEEK_DAYS);
+	return static_cast<WeekDay>(weekDay);
 }
 
 bool CDate::IsValid() const
