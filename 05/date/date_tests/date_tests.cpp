@@ -319,28 +319,44 @@ TEST_CASE("Checking operators")
 	{
 		CDate d1(1, Month::JANUARY, 1970);
 		CDate d2(1, Month::JANUARY, 1970);
+		CDate d3(2, Month::JANUARY, 1970);
 		REQUIRE(d1 == d2);
+		REQUIRE(!(d2 == d3));
 	}
 
 	SECTION("Checking inequality (!=)")
 	{
 		CDate d1(1, Month::JANUARY, 1970);
-		CDate d2(2, Month::JANUARY, 1970);
-		REQUIRE(d1 != d2);
+		CDate d2(1, Month::JANUARY, 1970);
+		CDate d3(2, Month::JANUARY, 1970);
+		REQUIRE(d1 != d3);
+		REQUIRE(!(d1 != d2));
 	}
+
+	//допилить тесты сравнения
 
 	SECTION("Checking less than (<)")
 	{
 		CDate d1(1, Month::JANUARY, 1970);
-		CDate d2(2, Month::JANUARY, 1970);
-		REQUIRE(d1 < d2);
+		CDate d2(1, Month::JANUARY, 1970);
+		CDate d3(2, Month::JANUARY, 1970);
+		CDate d4(3, Month::JANUARY, 1970);
+
+		REQUIRE(!(d3 < d2));
+		REQUIRE(!(d2 < d1));
+		REQUIRE(d3 < d4);
 	}
 
 	SECTION("Checking greater than (>)")
 	{
-		CDate d1(2, Month::JANUARY, 1970);
+		CDate d1(1, Month::JANUARY, 1970);
 		CDate d2(1, Month::JANUARY, 1970);
-		REQUIRE(d1 > d2);
+		CDate d3(2, Month::JANUARY, 1970);
+		CDate d4(3, Month::JANUARY, 1970);
+
+		REQUIRE(d3 > d2);
+		REQUIRE(!(d2 > d1));
+		REQUIRE(!(d3 > d4));
 	}
 
 	SECTION("Checking less than or equal (<=)")
@@ -350,6 +366,7 @@ TEST_CASE("Checking operators")
 		CDate d3(1, Month::JANUARY, 1970);
 		REQUIRE(d1 <= d2);
 		REQUIRE(d1 <= d3);
+		REQUIRE(!(d2 <= d1));
 	}
 
 	SECTION("Checking greater than or equal (>=)")
@@ -359,6 +376,7 @@ TEST_CASE("Checking operators")
 		CDate d3(2, Month::JANUARY, 1970);
 		REQUIRE(d1 >= d2);
 		REQUIRE(d1 >= d3);
+		REQUIRE(!(d2 >= d1));
 	}
 
 	SECTION("Checking prefix increment (++)")
@@ -425,11 +443,22 @@ TEST_CASE("Checking operators")
 		REQUIRE(date.GetDay() == 1);
 		REQUIRE(date.GetMonth() == Month::JANUARY);
 		REQUIRE(date.GetYear() == 1970);
-
-		//std::istringstream isInvalid("dfgss");
-		//isInvalid >> date;
-		//std::ostringstream os;
-		//os << date;
-		//REQUIRE(os.str() == "INVALID");
 	}
+}
+
+TEST_CASE("Check weekday")
+{
+	CDate date1(18, Month::MAY, 2400);
+	CDate date2(18, Month::MAY, 2024);
+	unsigned int result = date1 - date2;
+	REQUIRE(result == 137331);
+	REQUIRE(date2 + result == date1);
+
+	//должна быть возможность складывать дни с датами в обоих порядках
+	REQUIRE(result + date2 == date1);
+	REQUIRE(date2.GetDay() == 18);
+	REQUIRE(date2.GetMonth() == Month::MAY);
+	REQUIRE(date2.GetYear() == 2024);
+
+	REQUIRE(date2.GetWeekDay() == WeekDay::SATURDAY);
 }
