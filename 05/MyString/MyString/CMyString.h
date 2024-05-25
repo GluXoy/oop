@@ -10,7 +10,6 @@ public:
     CMyString(const char* pString, size_t length);
     CMyString(CMyString const& other);
     CMyString(CMyString&& other) noexcept;
-    CMyString(CMyString&& other, size_t length) noexcept;
     CMyString(std::string const& stlString);
     ~CMyString();
 
@@ -44,4 +43,5 @@ public:
 private:
     char* m_str;
     size_t m_length;
+    //capacity
 };

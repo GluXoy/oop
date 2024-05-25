@@ -11,6 +11,7 @@ CMyString::CMyString()
 {
 }
 
+// делегирующий конструктор надо так как код дублируется
 CMyString::CMyString(const char* pString)
 	: m_length(strlen(pString)),
 	m_str(nullptr)
@@ -70,23 +71,18 @@ CMyString::CMyString(CMyString&& other) noexcept
 	other.m_str = nullptr;
 }
 
-CMyString::CMyString(CMyString&& other, size_t length) noexcept
-	: m_length(length),
-	m_str(other.m_str)
-{
-	other.m_str = nullptr;
-}
 
+// что будет если выбросит исключение даже если noexcept
 CMyString& CMyString::operator =(CMyString&& other) noexcept
 {
 	if (&other != this)
 	{
 		delete[] m_str;
-		m_str = new char[other.m_length];
+		m_str = new char[other.m_length];// исключение 
 		m_str = other.m_str;
 		m_length = other.m_length;
 		other.m_length = 0;
-		other.m_str = 0;
+		other.m_str = nullptr;
 	}
 	return *this;
 }
@@ -133,12 +129,12 @@ const char* CMyString::GetStringData() const
 
 CMyString CMyString::SubString(size_t start, size_t length) const
 {
-	if (start < 0)
+	if (start < 0) // всегда falsse
 	{
 		throw std::out_of_range("start position must be >= 0");
 	}
 
-	if (m_length == 0 || start > m_length - 1)
+	if (m_length == 0 || start >= m_length)
 	{
 		return CMyString();
 	}
@@ -150,6 +146,7 @@ CMyString CMyString::SubString(size_t start, size_t length) const
 	}
 
 	char* newStr = new char[len];
+	//присваивать сразу в строку не копировать во временный буфер
 
 	for (size_t i = 0; i < len; i++)
 	{
@@ -197,12 +194,13 @@ CMyString& CMyString::operator =(const CMyString& other)
 		return *this;
 	}
 
-	if (m_str != nullptr)
+	if (m_str != nullptr)//проверка избыточна
 	{
 		delete[] m_str;
 		m_str = nullptr;
 	}
 
+	//работать не будет если выбросится исключение в new
 	m_length = other.m_length;
 	if (m_length == 0)
 	{
